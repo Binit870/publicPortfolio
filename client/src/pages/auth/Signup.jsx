@@ -42,7 +42,7 @@ export default function Signup() {
 
         <div className="absolute w-[600px] h-[600px] bg-orange-300 rounded-full bottom-[-200px] left-[-200px]" />
 
-    
+
 
       </div>
 
