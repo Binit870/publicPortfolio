@@ -6,10 +6,60 @@ import { generateAccessToken, generateRefreshToken, cookieOptions } from "../ser
 import jwt from "jsonwebtoken";
 import { ENV } from "../config/env.js";
 
+export const signup = asyncHandler(async (req, res) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if (password.length < 6) {
+    throw new ApiError(400, "Password must be at least 6 characters");
+  }
+
+  // prevent role injection
+  delete req.body.role;
+
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    throw new ApiError(409, "User already exists with this email");
+  }
+
+  const user = await User.create({
+    name,
+    email,
+    password,
+    role: "user",
+  });
+
+  const accessToken = generateAccessToken(user);
+  const refreshToken = generateRefreshToken(user);
+
+  user.refreshToken = refreshToken;
+  await user.save({ validateBeforeSave: false });
+
+  const createdUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
+  return res
+    .status(201)
+    .cookie("accessToken", accessToken, cookieOptions)
+    .cookie("refreshToken", refreshToken, cookieOptions)
+    .json(
+      new ApiResponse(
+        201,
+        { user: createdUser, accessToken },
+        "User registered successfully"
+      )
+    );
+});
+
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).select("+password +refreshToken");
   if (!user) throw new ApiError(404, "User not found");
   if (!user.isActive) throw new ApiError(403, "Account deactivated");
 
