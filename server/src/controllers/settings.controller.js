@@ -58,6 +58,7 @@ export const updateSettings = asyncHandler(async (req, res) => {
   );
 
   return res.status(200).json(new ApiResponse(200, updated, "Settings updated"));
+  
 });
 
 // ADMIN — get contact page content

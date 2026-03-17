@@ -17,11 +17,21 @@ import Signup from "./pages/auth/Signup";
 
 import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
 import AdminManagePage from "./pages/superadmin/AdminManagePage";
+import AdminPermissionPage from "./pages/superadmin/AdminPermissionsPage";
+import SuperAdminLayout from "./layouts/SuperAdminLayout";
+
+import AdminRoute from "./routes/AdminRoute";
+import AdminDashboard from "./pages/admin/AdminDashboardPage";
+import AdminLayout from "./layouts/AdminLayout";
+import MessagesAdminPage from "./pages/admin/MessagesAdminPage";
+import ContactAdminPage from "./pages/admin/ContactAdminPage";
+import EventsAdminPage from "./pages/admin/EventsAdminPage";
+import EventFormPage from "./pages/admin/EventFormPage";
+import GalleryAdminPage from "./pages/admin/GalleryAdminPage";
+import GalleryItemFormPage from "./pages/admin/GalleryItemFormPage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
-
-import SuperAdminLayout from "./layouts/SuperAdminLayout";
 import "./index.css";
 
 
@@ -32,6 +42,7 @@ function Layout() {
   // hide navbar for auth and superadmin routes
   const hideNavbar =
     location.pathname.startsWith("/superadmin") ||
+    location.pathname.startsWith("/admin") ||
     location.pathname === "/login" ||
     location.pathname === "/signup";
 
@@ -51,9 +62,9 @@ function Layout() {
 
         {/* PUBLIC + USER PROTECTED ROUTES */}
 
+        <Route path="/" element={<HomePage />} />
         <Route element={<ProtectedRoute />}>
 
-          <Route path="/" element={<HomePage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
@@ -62,38 +73,57 @@ function Layout() {
           <Route path="/contact" element={<ContactPage />} />
 
         </Route>
+        {/* ADMIN ROUTES */}
+        <Route element={<AdminRoute />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/messages" element={<MessagesAdminPage />} />
+            <Route path="/admin/contact" element={<ContactAdminPage />} />
+            <Route path="/admin/events" element={<EventsAdminPage />} />
+            <Route path="/admin/events/new" element={<EventFormPage />} />
+            <Route path="/admin/events/:id/edit" element={<EventFormPage />} />
+            <Route path="/admin/gallery" element={<GalleryAdminPage />} />
+            <Route path="/admin/gallery/items/new" element={<GalleryItemFormPage />} />
+            <Route path="/admin/gallery/items/:id/edit" element={<GalleryItemFormPage />} />
+            {/* <Route path="/admin/events" element={<AdminEvents />} /> */}
 
+          </Route>
+        </Route>
 
         {/* SUPERADMIN ROUTES */}
 
         <Route element={<SuperAdminRoute />}>
-<Route element={<SuperAdminLayout />}>
+          <Route element={<SuperAdminLayout />}>
 
-          <Route
-            path="/superadmin/dashboard"
-            element={<SuperAdminDashboard />}
-          />
+            <Route
+              path="/superadmin/dashboard"
+              element={<SuperAdminDashboard />}
+            />
 
-          <Route
-            path="/superadmin/manage-admins"
-            element={<SuperAdminDashboard />}
-          />
+            <Route
+              path="/superadmin/manage-admins"
+              element={<SuperAdminDashboard />}
+            />
 
-          <Route
-            path="/superadmin/admins/create"
-            element={<AdminManagePage mode="create" />}
-          />
+            <Route
+              path="/superadmin/admins/create"
+              element={<AdminManagePage mode="create" />}
+            />
 
-          <Route
-            path="/superadmin/admins/toggle"
-            element={<AdminManagePage mode="toggle" />}
-          />
+            <Route
+              path="/superadmin/admins/toggle"
+              element={<AdminManagePage mode="toggle" />}
+            />
 
-          <Route
-            path="/superadmin/admins/delete"
-            element={<AdminManagePage mode="delete" />}
-          />
-</Route>
+            <Route
+              path="/superadmin/admins/delete"
+              element={<AdminManagePage mode="delete" />}
+            />
+            <Route
+              path="/superadmin/admin-permissions"
+              element={<AdminPermissionPage />}
+            />
+          </Route>
 
         </Route>
 

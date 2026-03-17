@@ -38,11 +38,11 @@ export default function Signup() {
     e.preventDefault();
     setError(""); setSuccess("");
 
-    if (!name)               return setError("Please enter your full name.");
-    if (!email)              return setError("Please enter your email address.");
-    if (!password)           return setError("Please enter a password.");
-    if (password.length < 6) return setError("Password must be at least 6 characters.");
-    if (password !== confirm) return setError("Passwords do not match!");
+    if (!name)                return setError("Please enter your full name.");
+    if (!email)               return setError("Please enter your email address.");
+    if (!password)            return setError("Please enter a password.");
+    if (password.length < 6)  return setError("Password must be at least 6 characters.");
+    if (password !== confirm)  return setError("Passwords do not match!");
 
     setLoading(true);
     try {
@@ -65,85 +65,127 @@ export default function Signup() {
       <div className="auth-orb"/><div className="auth-orb"/><div className="auth-orb"/>
 
       <div className="auth-card">
+        {/* ── Banner ── */}
         <div className="auth-banner">
           <div className="banner-icon-ring">✨</div>
           <div className="banner-title">Create Account</div>
           <div className="banner-subtitle">Sign up and start your journey today</div>
         </div>
 
+        {/* ── Body ── */}
         <div className="auth-body">
           {error   && <div className="auth-alert error">{error}</div>}
           {success && <div className="auth-alert success">{success}</div>}
 
           <form className="auth-form" onSubmit={handleSignup}>
+            {/* Name */}
             <div className="field-wrap">
               <span className="field-prefix">👤</span>
-              <input className="auth-input" type="text" placeholder="Full Name"
-                value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" />
+              <input
+                className="auth-input"
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+              />
             </div>
 
+            {/* Email */}
             <div className="field-wrap">
               <span className="field-prefix">📧</span>
-              <input className="auth-input" type="email" placeholder="Email Address"
-                value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
+              <input
+                className="auth-input"
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
             </div>
 
+            {/* Password */}
             <div className="field-wrap">
               <span className="field-prefix">🔒</span>
-              <input className="auth-input" type={showPw ? "text" : "password"} placeholder="Password"
-                value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+              <input
+                className="auth-input"
+                type={showPw ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+              />
               <span className="field-suffix" onClick={() => setShowPw(p => !p)}>
                 {showPw ? "🙈" : "👁️"}
               </span>
             </div>
 
+            {/* Password strength bars */}
             {password && (
               <>
                 <div className="pw-strength-bars">
                   {[1,2,3,4].map(i => (
-                    <div key={i} className={`pw-bar ${
-                      strength.score >= i
-                        ? strength.score <= 1 ? "active-weak"
-                        : strength.score <= 2 ? "active-medium"
-                        : "active-strong" : ""
-                    }`}/>
+                    <div
+                      key={i}
+                      className={`pw-bar ${
+                        strength.score >= i
+                          ? strength.score <= 1 ? "active-weak"
+                          : strength.score <= 2 ? "active-medium"
+                          : "active-strong"
+                          : ""
+                      }`}
+                    />
                   ))}
                 </div>
-                <div className="pw-strength-label" style={{ color: strength.color }}>{strength.label}</div>
+                <div className="pw-strength-label" style={{ color: strength.color }}>
+                  {strength.label}
+                </div>
               </>
             )}
 
+            {/* Confirm Password */}
             <div className="field-wrap">
               <span className="field-prefix">🔑</span>
-              <input className="auth-input" type={showCf ? "text" : "password"} placeholder="Confirm Password"
-                value={confirm} onChange={(e) => setConfirm(e.target.value)} autoComplete="new-password" />
+              <input
+                className="auth-input"
+                type={showCf ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                autoComplete="new-password"
+              />
               <span className="field-suffix" onClick={() => setShowCf(p => !p)}>
                 {showCf ? "🙈" : "👁️"}
               </span>
             </div>
 
+            {/* Match hint */}
             {confirm && (
               <div className="match-hint" style={{ color: passwordsMatch ? "#27ae60" : "#e74c3c" }}>
                 {passwordsMatch ? "✅ Passwords match" : "❌ Passwords don't match"}
               </div>
             )}
 
+            {/* Submit */}
             <button type="submit" className="auth-submit" disabled={loading}>
               {loading ? <><div className="btn-spinner"/>Creating Account…</> : "🚀 Create Account"}
             </button>
 
+            {/* Terms */}
             <div className="terms-text">
               By signing up, you agree to our&nbsp;
               <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
             </div>
 
+            {/* Divider */}
             <div className="auth-divider">
               <div className="divider-line"/>
               <span className="divider-or">OR</span>
               <div className="divider-line"/>
             </div>
 
-            <div className="auth-switch auth-switch--signup">
+            {/* Switch to Login */}
+            <div className="auth-switch">
               Already have an account?&nbsp;
               <button type="button" className="switch-cta" onClick={() => navigate("/login")}>Login</button>
             </div>
