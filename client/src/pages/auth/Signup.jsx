@@ -215,74 +215,68 @@ export default function Signup() {
           <div className="banner-subtitle">Sign up and start your journey today</div>
         </div>
 
-        <div className="auth-body">
-          {error   && <div className="auth-alert error">{error}</div>}
-          {success && <div className="auth-alert success">{success}</div>}
+    <div className="min-h-screen flex">
 
-          <form className="auth-form" onSubmit={handleSignup} noValidate>
+      {/* LEFT ILLUSTRATION */}
 
-            <div className="field-wrap">
-              <span className="field-prefix">👤</span>
-              <input className="auth-input" type="text" placeholder="Full Name"
-                value={name} onChange={e => setName(e.target.value)} autoComplete="name"/>
-            </div>
+      <div className="hidden lg:flex w-1/2 bg-orange-400 items-center justify-center relative overflow-hidden">
 
-            <div className="field-wrap">
-              <span className="field-prefix">📧</span>
-              <input className="auth-input" type="email" placeholder="Email Address"
-                value={email} onChange={e => setEmail(e.target.value)} autoComplete="email"/>
-            </div>
+        <div className="absolute w-[600px] h-[600px] bg-orange-300 rounded-full bottom-[-200px] left-[-200px]" />
 
-            <div className="field-wrap">
-              <span className="field-prefix">🔒</span>
-              <input className="auth-input" type={showPw ? "text" : "password"}
-                placeholder="Create Password" value={password}
-                onChange={e => setPassword(e.target.value)} autoComplete="new-password"/>
-              <span className="field-suffix" onClick={() => setShowPw(p => !p)}>
-                {showPw ? "🙈" : "👁️"}
-              </span>
-            </div>
 
-            {password && (
-              <>
-                <div className="pw-strength-bars">
-                  {[1,2,3,4].map(i => (
-                    <div key={i} className={`pw-bar ${
-                      i <= strength.score
-                        ? strength.score <= 1 ? "active-weak"
-                        : strength.score <= 2 ? "active-medium"
-                        : "active-strong" : ""
-                    }`}/>
-                  ))}
-                </div>
-                <div className="pw-strength-label" style={{ color: strength.color }}>
-                  {strength.label}
-                </div>
-              </>
-            )}
 
-            <div className="field-wrap">
-              <span className="field-prefix">🔐</span>
-              <input className="auth-input" type={showCf ? "text" : "password"}
-                placeholder="Confirm Password" value={confirm}
-                onChange={e => setConfirm(e.target.value)} autoComplete="new-password"
-                style={{
-                  borderColor: passwordsMatch ? "#27ae60" : passwordsMismatch ? "#e74c3c" : undefined,
-                  boxShadow:   passwordsMatch ? "0 0 0 4px rgba(39,174,96,0.15)"
-                             : passwordsMismatch ? "0 0 0 4px rgba(231,76,60,0.15)" : undefined,
-                }}/>
-              <span className="field-suffix" onClick={() => setShowCf(p => !p)}>
-                {showCf ? "🙈" : "👁️"}
-              </span>
-            </div>
-            {confirm && (
-              <div className="match-hint" style={{ color: passwordsMatch ? "#27ae60" : "#e74c3c" }}>
-                {passwordsMatch ? "✅ Passwords match" : "❌ Passwords don't match"}
-              </div>
-            )}
+      </div>
 
-            <button className="auth-submit" type="submit" disabled={loading}>
-              {loading ? <span className="btn-spinner"/> : "Create Account →"}
+      {/* RIGHT FORM */}
+
+      <div className="flex w-full lg:w-1/2 items-center justify-center bg-white">
+
+        <div className="w-full max-w-md p-10">
+
+          <h2 className="text-3xl font-bold text-gray-800 mb-2">
+            Create Account
+          </h2>
+
+          <p className="text-gray-500 mb-6">
+            Signup to get started
+          </p>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+
+            <input
+              type="text"
+              placeholder="Name"
+              required
+              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
+              onChange={(e) =>
+                setForm({ ...form, name: e.target.value })
+              }
+            />
+
+            <input
+              type="email"
+              placeholder="Email"
+              required
+              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
+              onChange={(e) =>
+                setForm({ ...form, email: e.target.value })
+              }
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              required
+              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
+              onChange={(e) =>
+                setForm({ ...form, password: e.target.value })
+              }
+            />
+
+            <button
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full transition"
+            >
+              SIGNUP
             </button>
 
             <div className="terms-text">

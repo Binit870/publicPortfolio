@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import SuperAdminRoute from "./routes/SuperAdminRoute";
 
 import HomePage from "./pages/public/HomePage";
 import EventDetailPage from "./pages/public/EventDetailPage";
@@ -8,18 +9,19 @@ import GalleryPage from "./pages/public/GalleryPage";
 import UpdatesPage from "./pages/public/UpdatesPage";
 import UpdateDetailPage from "./pages/public/UpdateDetailPage";
 import ContactPage from "./pages/public/ContactPage";
-import NotFoundPage from "./pages/public/NotFoundPage";
 import EventsPage from "./pages/public/EventsPage";
+import NotFoundPage from "./pages/public/NotFoundPage";
 
 import Login from "./pages/auth/Login";
 import Signup from "./pages/auth/Signup";
 
+import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
+import AdminManagePage from "./pages/superadmin/AdminManagePage";
+
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
 
-import SuperAdminDashboard from "./pages/superadmin/SuperAdminDashboard";
-import SuperAdminRoute from "./routes/SuperAdminRoute";
-
+import SuperAdminLayout from "./layouts/SuperAdminLayout";
 import "./index.css";
 
 
@@ -27,7 +29,9 @@ function Layout() {
 
   const location = useLocation();
 
+  // hide navbar for auth and superadmin routes
   const hideNavbar =
+    location.pathname.startsWith("/superadmin") ||
     location.pathname === "/login" ||
     location.pathname === "/signup";
 
@@ -39,8 +43,13 @@ function Layout() {
 
       <Routes>
 
+        {/* AUTH ROUTES */}
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
+
+        {/* PUBLIC + USER PROTECTED ROUTES */}
 
         <Route element={<ProtectedRoute />}>
 
@@ -53,12 +62,43 @@ function Layout() {
           <Route path="/contact" element={<ContactPage />} />
 
         </Route>
+
+
+        {/* SUPERADMIN ROUTES */}
+
         <Route element={<SuperAdminRoute />}>
+<Route element={<SuperAdminLayout />}>
+
           <Route
             path="/superadmin/dashboard"
             element={<SuperAdminDashboard />}
           />
+
+          <Route
+            path="/superadmin/manage-admins"
+            element={<SuperAdminDashboard />}
+          />
+
+          <Route
+            path="/superadmin/admins/create"
+            element={<AdminManagePage mode="create" />}
+          />
+
+          <Route
+            path="/superadmin/admins/toggle"
+            element={<AdminManagePage mode="toggle" />}
+          />
+
+          <Route
+            path="/superadmin/admins/delete"
+            element={<AdminManagePage mode="delete" />}
+          />
+</Route>
+
         </Route>
+
+
+        {/* 404 */}
 
         <Route path="*" element={<NotFoundPage />} />
 
