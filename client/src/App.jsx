@@ -24,6 +24,8 @@ import AdminRoute from "./routes/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import AdminLayout from "./layouts/AdminLayout";
 import MessagesAdminPage from "./pages/admin/MessagesAdminPage";
+import UpdatesAdminPage from "./pages/admin/UpdatesAdminPage";
+import UpdateFormPage from "./pages/admin/UpdateFormPage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -73,6 +75,9 @@ function Layout() {
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/messages" element={<MessagesAdminPage />} />
+            <Route path="/admin/updates" element={<UpdatesAdminPage />} />
+            <Route path="/admin/updates/new" element={<UpdateFormPage />} />
+            <Route path="/admin/updates/edit/:id" element={<UpdateFormPage />} />
             {/* <Route path="/admin/events" element={<AdminEvents />} /> */}
 
           </Route>
