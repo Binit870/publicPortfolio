@@ -20,7 +20,7 @@ import AdminManagePage from "./pages/superadmin/AdminManagePage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
-
+import AdminPermissionPage from "./pages/superadmin/AdminPermissionsPage";
 import SuperAdminLayout from "./layouts/SuperAdminLayout";
 import "./index.css";
 
@@ -51,9 +51,9 @@ function Layout() {
 
         {/* PUBLIC + USER PROTECTED ROUTES */}
 
+          <Route path="/" element={<HomePage />} />
         <Route element={<ProtectedRoute />}>
 
-          <Route path="/" element={<HomePage />} />
           <Route path="/events" element={<EventsPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/gallery" element={<GalleryPage />} />
@@ -92,6 +92,10 @@ function Layout() {
           <Route
             path="/superadmin/admins/delete"
             element={<AdminManagePage mode="delete" />}
+          />
+           <Route
+            path="/superadmin/admin-permissions"
+            element={<AdminPermissionPage />}
           />
 </Route>
 

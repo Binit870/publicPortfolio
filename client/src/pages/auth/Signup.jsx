@@ -175,22 +175,18 @@ export default function Signup() {
     e.preventDefault();
     setError(""); setSuccess("");
 
-    // client-side validation
-    if (!name)               return setError("Please enter your full name.");
-    if (!email)              return setError("Please enter your email address.");
-    if (!password)           return setError("Please enter a password.");
-    if (password.length < 6) return setError("Password must be at least 6 characters.");
-    if (password !== confirm) return setError("Passwords do not match!");
+    if (!name)                return setError("Please enter your full name.");
+    if (!email)               return setError("Please enter your email address.");
+    if (!password)            return setError("Please enter a password.");
+    if (password.length < 6)  return setError("Password must be at least 6 characters.");
+    if (password !== confirm)  return setError("Passwords do not match!");
 
     setLoading(true);
     try {
-      // ✅ FIX: pass ONE object — matches AuthContext: signup(data)
-      // which calls: API.post("/auth/signup", data)
       await signup({ name, email, password });
-
       toast.success(`Welcome, ${name}! 🎉`);
       setSuccess(`Account created! Welcome, ${name}! 🎉`);
-      setTimeout(() => navigate("/"), 1300); // change to your dashboard route
+      setTimeout(() => navigate("/"), 1300);
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
@@ -209,87 +205,126 @@ export default function Signup() {
       <div className="auth-orb"/><div className="auth-orb"/><div className="auth-orb"/>
 
       <div className="auth-card">
+        {/* ── Banner ── */}
         <div className="auth-banner">
           <div className="banner-icon-ring">✨</div>
           <div className="banner-title">Create Account</div>
           <div className="banner-subtitle">Sign up and start your journey today</div>
         </div>
 
-    <div className="min-h-screen flex">
+        {/* ── Body ── */}
+        <div className="auth-body">
+          {error   && <div className="auth-alert error">{error}</div>}
+          {success && <div className="auth-alert success">{success}</div>}
 
-      {/* LEFT ILLUSTRATION */}
+          <form className="auth-form" onSubmit={handleSignup}>
+            {/* Name */}
+            <div className="field-wrap">
+              <span className="field-prefix">👤</span>
+              <input
+                className="auth-input"
+                type="text"
+                placeholder="Full Name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                autoComplete="name"
+              />
+            </div>
 
-      <div className="hidden lg:flex w-1/2 bg-orange-400 items-center justify-center relative overflow-hidden">
+            {/* Email */}
+            <div className="field-wrap">
+              <span className="field-prefix">📧</span>
+              <input
+                className="auth-input"
+                type="email"
+                placeholder="Email Address"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+              />
+            </div>
 
-        <div className="absolute w-[600px] h-[600px] bg-orange-300 rounded-full bottom-[-200px] left-[-200px]" />
+            {/* Password */}
+            <div className="field-wrap">
+              <span className="field-prefix">🔒</span>
+              <input
+                className="auth-input"
+                type={showPw ? "text" : "password"}
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+              />
+              <span className="field-suffix" onClick={() => setShowPw(p => !p)}>
+                {showPw ? "🙈" : "👁️"}
+              </span>
+            </div>
 
+            {/* Password strength bars */}
+            {password && (
+              <>
+                <div className="pw-strength-bars">
+                  {[1,2,3,4].map(i => (
+                    <div
+                      key={i}
+                      className={`pw-bar ${
+                        strength.score >= i
+                          ? strength.score <= 1 ? "active-weak"
+                          : strength.score <= 2 ? "active-medium"
+                          : "active-strong"
+                          : ""
+                      }`}
+                    />
+                  ))}
+                </div>
+                <div className="pw-strength-label" style={{ color: strength.color }}>
+                  {strength.label}
+                </div>
+              </>
+            )}
 
+            {/* Confirm Password */}
+            <div className="field-wrap">
+              <span className="field-prefix">🔑</span>
+              <input
+                className="auth-input"
+                type={showCf ? "text" : "password"}
+                placeholder="Confirm Password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                autoComplete="new-password"
+              />
+              <span className="field-suffix" onClick={() => setShowCf(p => !p)}>
+                {showCf ? "🙈" : "👁️"}
+              </span>
+            </div>
 
-      </div>
+            {/* Match hint */}
+            {confirm && (
+              <div className="match-hint" style={{ color: passwordsMatch ? "#27ae60" : "#e74c3c" }}>
+                {passwordsMatch ? "✅ Passwords match" : "❌ Passwords don't match"}
+              </div>
+            )}
 
-      {/* RIGHT FORM */}
-
-      <div className="flex w-full lg:w-1/2 items-center justify-center bg-white">
-
-        <div className="w-full max-w-md p-10">
-
-          <h2 className="text-3xl font-bold text-gray-800 mb-2">
-            Create Account
-          </h2>
-
-          <p className="text-gray-500 mb-6">
-            Signup to get started
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-5">
-
-            <input
-              type="text"
-              placeholder="Name"
-              required
-              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-            />
-
-            <input
-              type="email"
-              placeholder="Email"
-              required
-              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
-              onChange={(e) =>
-                setForm({ ...form, email: e.target.value })
-              }
-            />
-
-            <input
-              type="password"
-              placeholder="Password"
-              required
-              className="w-full border-b-2 p-3 focus:outline-none focus:border-orange-400"
-              onChange={(e) =>
-                setForm({ ...form, password: e.target.value })
-              }
-            />
-
-            <button
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-full transition"
-            >
-              SIGNUP
+            {/* Submit */}
+            <button type="submit" className="auth-submit" disabled={loading}>
+              {loading ? <><div className="btn-spinner"/>Creating Account…</> : "🚀 Create Account"}
             </button>
 
+            {/* Terms */}
             <div className="terms-text">
               By signing up, you agree to our&nbsp;
               <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
             </div>
 
+            {/* Divider */}
             <div className="auth-divider">
               <div className="divider-line"/>
               <span className="divider-or">OR</span>
               <div className="divider-line"/>
             </div>
 
+            {/* Switch to Login */}
             <div className="auth-switch">
               Already have an account?&nbsp;
               <button type="button" className="switch-cta" onClick={() => navigate("/login")}>
