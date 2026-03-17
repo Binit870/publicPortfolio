@@ -12,8 +12,8 @@ createRoot(document.getElementById('root')).render(
         duration: 3000
       }}
     />
-  <StrictMode>
+  
     <App />
-  </StrictMode>,
+
   </>
 )
