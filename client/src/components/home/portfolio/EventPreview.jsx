@@ -1,13 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getPublishedEventsApi } from "../../../api/event.api";
 
-const events = [
-  { id: "1", emoji: "💻", color: "from-primary/20 to-primary/5", title: "React Summit 2026", date: "Apr 15, 2026", location: "San Francisco, CA", mode: "Hybrid", capacity: "500 seats", badge: "Upcoming", cta: "Register Now" },
-  { id: "2", emoji: "🎙️", color: "from-secondary/30 to-secondary/10", title: "DevTalk Live: System Design", date: "Apr 22, 2026", location: "Online", mode: "Online", capacity: "Unlimited", badge: "Live", cta: "Join Now" },
-  { id: "3", emoji: "📐", color: "from-primary/15 to-secondary/15", title: "UI/UX Design Bootcamp", date: "May 5, 2026", location: "New York, NY", mode: "Offline", capacity: "120 seats", badge: "Upcoming", cta: "Book Seat" },
-];
-
-const badgeStyle = (badge) => {
-  if (badge === "Live") return "bg-green-500 text-white animate-pulse";
+const badgeStyle = (status) => {
+  if (status === "Published") return "bg-green-100 text-green-700";
+  if (status === "Cancelled") return "bg-red-100 text-red-700";
   return "bg-primary/10 text-primary";
 };
 
@@ -18,6 +15,53 @@ const modeStyle = (mode) => {
 
 const EventsPreview = () => {
   const navigate = useNavigate();
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await getPublishedEventsApi({ limit: 3 });
+        setEvents(res.data.data || []);
+      } catch {
+        setEvents([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEvents();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="events" className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <span className="section-label mb-2 block">Upcoming</span>
+            <h2 className="section-title">Events</h2>
+            <div className="saffron-underline mx-auto" />
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="card-portfolio overflow-hidden animate-pulse">
+                <div className="h-36 bg-muted" />
+                <div className="p-5 space-y-3">
+                  <div className="h-4 bg-muted rounded w-3/4" />
+                  <div className="h-3 bg-muted rounded w-1/2" />
+                  <div className="h-3 bg-muted rounded w-2/3" />
+                  <div className="h-8 bg-muted rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (events.length === 0) {
+    return null;
+  }
 
   return (
     <section id="events" className="py-24 bg-white">
@@ -32,43 +76,64 @@ const EventsPreview = () => {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
+        <div className={`grid gap-6 ${
+          events.length === 1
+            ? "md:grid-cols-1 max-w-md mx-auto"
+            : events.length === 2
+            ? "md:grid-cols-2 max-w-2xl mx-auto"
+            : "md:grid-cols-3"
+        }`}>
           {events.map((e) => (
             <div
-              key={e.id}
+              key={e._id}
               className="card-portfolio overflow-hidden cursor-pointer group"
-              onClick={() => navigate(`/events/${e.id}`)}
+              onClick={() => navigate(`/events/${e._id}`)}
             >
-              <div className={`relative h-36 bg-gradient-to-br ${e.color} flex items-center justify-center text-6xl`}>
+              <div className="relative h-36 bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-6xl">
                 <span className="group-hover:scale-110 transition-smooth inline-block">
-                  {e.emoji}
+                  {e.eventMode === "Online" ? "🎙️" : e.eventMode === "Hybrid" ? "💻" : "📐"}
                 </span>
-                <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${badgeStyle(e.badge)}`}>
-                  {e.badge === "Live" && "🔴 "}{e.badge}
+                <span className={`absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full ${badgeStyle(e.status)}`}>
+                  {e.status}
                 </span>
-                <span className={`absolute top-3 right-3 text-[10px] font-semibold px-2.5 py-1 rounded-full ${modeStyle(e.mode)}`}>
-                  {e.mode}
+                <span className={`absolute top-3 right-3 text-[10px] font-semibold px-2.5 py-1 rounded-full ${modeStyle(e.eventMode)}`}>
+                  {e.eventMode}
                 </span>
               </div>
 
               <div className="p-5">
-                <h3 className="font-bold text-foreground leading-snug mb-3">{e.title}</h3>
+                <h3 className="font-bold text-foreground leading-snug mb-3">
+                  {e.title}
+                </h3>
                 <div className="space-y-1.5 mb-4">
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>📅</span><span>{e.date}</span>
+                    <span>📅</span>
+                    <span>
+                      {e.dateTime?.startDate
+                        ? new Date(e.dateTime.startDate).toDateString()
+                        : "TBA"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>📍</span><span>{e.location}</span>
+                    <span>📍</span>
+                    <span>
+                      {e.location?.city || e.location?.venue || "Online"}
+                    </span>
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span>🎟️</span><span>{e.capacity}</span>
+                    <span>🎟️</span>
+                    <span>
+                      {e.registration?.isFree
+                        ? "Free"
+                        : `${e.registration?.currency} ${e.registration?.price}`}
+                    </span>
                   </div>
                 </div>
                 <button
                   className="btn-primary w-full text-sm py-2"
-                  onClick={(ev) => { ev.stopPropagation(); navigate(`/events/${e.id}`); }}
+                  onClick={(ev) => { ev.stopPropagation(); navigate(`/events/${e._id}`); }}
                 >
-                  {e.cta}
+                  View Event
                 </button>
               </div>
             </div>
