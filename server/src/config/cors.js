@@ -2,7 +2,7 @@ import { ENV } from "./env.js";
 
 const allowedOrigins = ENV.CORS_ORIGIN
   ? ENV.CORS_ORIGIN.split(",").map((o) => o.trim())
-  : ["http://localhost:5173"];
+  : ["http://localhost:5173", "https://public-portfolio-brown.vercel.app"];
 
 export const corsOptions = {
   origin: (origin, callback) => {
