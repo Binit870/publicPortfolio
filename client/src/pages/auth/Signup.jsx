@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
-import "./AuthPage.css";
+import "./Authpage.css";
 
 // ─── Password strength ────────────────────────────────────────────────────────
 const pwStrength = (pw) => {

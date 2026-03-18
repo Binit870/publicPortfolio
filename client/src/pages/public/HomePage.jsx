@@ -6,7 +6,7 @@ import AboutPreview from "../../components/home/portfolio/AboutPreview";
 import LatestUpdates from "../../components/home/portfolio/LatestUpdates";
 import GalleryPreview from "../../components/home/portfolio/GalleryPreview";
 import EventsPreview from "../../components/home/portfolio/EventPreview";
-import Footer from "../../components/home/portfolio/Footer";
+import Footer from "../../components/home/portfolio/footer";
 
 const Index = () => {
   return (
