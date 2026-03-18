@@ -29,7 +29,7 @@ export default function SuperAdminSidebar() {
     <>
       {/* MOBILE TOP BAR */}
       <div className="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm">
-        <h1 className="font-bold text-green-700">SuperAdmin</h1>
+        <h1 className="font-bold text-orange-500">SuperAdmin</h1>
         <button onClick={() => setMobileOpen(true)}>
           <Menu />
         </button>
@@ -56,7 +56,7 @@ export default function SuperAdminSidebar() {
         {/* HEADER */}
         <div className="p-4 flex items-center justify-between border-b">
           {!collapsed && (
-            <h1 className="font-bold text-lg text-green-700">
+            <h1 className="font-bold text-lg text-orange-500">
               SuperAdmin Panel
             </h1>
           )}
