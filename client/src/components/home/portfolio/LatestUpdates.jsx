@@ -1,12 +1,6 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../../../api/axiosInstance";
-
-const EMOJI_MAP = {
-  Development: "💻", Design: "🎨", DevOps: "⚙️", Career: "🚀",
-  "Open Source": "🌐", "AI/ML": "🤖", Security: "🔒",
-  Productivity: "⚡", Tutorial: "📝",
-};
+import { useState, useEffect } from "react";
+import { getPublishedBlogsApi } from "../../../api/blog.api";
 
 const LatestUpdates = () => {
   const navigate = useNavigate();
@@ -14,20 +8,12 @@ const LatestUpdates = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const res  = await API.get("/blogs", { params: { limit: 3 } });
-        const data = res.data.data;
-        setUpdates(data.blogs ?? data.data ?? []);
-      } catch {
-        // silently fail — section just won't render
-      } finally {
-        setLoading(false);
-      }
-    })();
+    getPublishedBlogsApi({ limit: 3 })
+      .then((res) => setUpdates(res.data.data || []))
+      .catch(() => setUpdates([]))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Skeleton while loading
   if (loading) {
     return (
       <section id="updates" className="py-24 bg-white">
@@ -38,12 +24,12 @@ const LatestUpdates = () => {
             <div className="saffron-underline mx-auto" />
           </div>
           <div className="grid md:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, i) => (
+            {[1, 2, 3].map((i) => (
               <div key={i} className="card-portfolio p-6 animate-pulse">
-                <div className="w-14 h-14 rounded-2xl bg-border mb-5" />
-                <div className="h-3 bg-border rounded w-1/3 mb-3" />
-                <div className="h-5 bg-border rounded w-3/4 mb-2" />
-                <div className="h-4 bg-border rounded w-full" />
+                <div className="w-14 h-14 rounded-2xl bg-muted mb-5" />
+                <div className="h-3 bg-muted rounded w-1/3 mb-3" />
+                <div className="h-4 bg-muted rounded w-3/4 mb-2" />
+                <div className="h-3 bg-muted rounded w-full" />
               </div>
             ))}
           </div>
@@ -52,7 +38,6 @@ const LatestUpdates = () => {
     );
   }
 
-  // Don't render section if no posts
   if (updates.length === 0) return null;
 
   return (
@@ -65,44 +50,38 @@ const LatestUpdates = () => {
           <div className="saffron-underline mx-auto" />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {updates.map((post) => (
+        <div className={`grid gap-6 ${
+          updates.length === 1 ? "md:grid-cols-1 max-w-md mx-auto"
+          : updates.length === 2 ? "md:grid-cols-2 max-w-2xl mx-auto"
+          : "md:grid-cols-3"
+        }`}>
+          {updates.map((u) => (
             <div
-              key={post._id}
+              key={u.slug}
               className="card-portfolio p-6 text-left cursor-pointer group"
-              onClick={() => navigate(`/updates/${post.slug}`)}
+              onClick={() => navigate(`/updates/${u.slug}`)}
             >
-              {/* Cover image or emoji fallback */}
-              {post.coverImage ? (
-                <img
-                  src={post.coverImage}
-                  alt={post.title}
-                  className="w-14 h-14 rounded-2xl object-cover mb-5 group-hover:scale-105 transition-smooth"
-                />
-              ) : (
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center text-2xl mb-5 group-hover:scale-105 transition-smooth">
-                  {EMOJI_MAP[post.category] ?? "📝"}
-                </div>
-              )}
+              {/* Cover or gradient */}
+              <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center text-2xl mb-5 group-hover:scale-105 transition-smooth overflow-hidden">
+                {u.coverImage ? (
+                  <img src={u.coverImage} alt={u.title} className="w-full h-full object-cover rounded-2xl" />
+                ) : (
+                  "📝"
+                )}
+              </div>
 
               <div className="flex items-center justify-between mb-3">
-                {post.category && <span className="green-pill">{post.category}</span>}
+                <span className="green-pill">{u.category}</span>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(post.createdAt).toLocaleDateString("en-IN", {
-                    day: "numeric", month: "short", year: "numeric",
-                  })}
+                  {new Date(u.createdAt).toDateString()}
                 </span>
               </div>
 
-              <h3 className="font-bold text-foreground leading-snug mb-2 line-clamp-2">
-                {post.title}
-              </h3>
+              <h3 className="font-bold text-foreground leading-snug mb-2">{u.title}</h3>
 
-              {post.excerpt && (
-                <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
-                  {post.excerpt}
-                </p>
-              )}
+              <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                {u.excerpt}
+              </p>
 
               <span className="text-xs font-semibold text-primary mt-4 inline-block group-hover:underline">
                 Read more &rarr;

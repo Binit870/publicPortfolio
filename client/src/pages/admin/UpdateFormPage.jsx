@@ -334,21 +334,13 @@ const UpdateFormPage = () => {
               <button
                 type="button"
                 disabled={!slug}
-                onClick={() => window.open(`/updates/${slug}`, "_blank")}
+                onClick={() => navigate(`/updates/${slug}`)}
                 className="btn-outline-primary flex items-center gap-2 text-sm disabled:opacity-40"
               >
                 <Eye size={14} /> Preview
               </button>
             )}
-            <button
-              type="button"
-              onClick={() => handleSave(false)}
-              disabled={saving}
-              className="btn-outline-primary flex items-center gap-2 text-sm"
-            >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-              Save Draft
-            </button>
+
             {!isPublished && (
               <button
                 type="button"
