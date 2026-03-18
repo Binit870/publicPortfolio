@@ -20,5 +20,5 @@ export const generateRefreshToken = (user) => {
 export const cookieOptions = {
   httpOnly: true,
   secure: ENV.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "lax",
 };
