@@ -27,24 +27,23 @@ export const AuthProvider = ({ children }) => {
   // LOGIN
   const login = async (data) => {
     const res = await API.post("/auth/login", data);
-
+    localStorage.setItem("accessToken", res.data.data.accessToken); // ✅ save token
     setUser(res.data.data.user);
-
     return res.data.data.user;
   };
 
   // SIGNUP
-  const signup = async (data) => {
+   const signup = async (data) => {
     const res = await API.post("/auth/signup", data);
-
+    localStorage.setItem("accessToken", res.data.data.accessToken); // ✅ save token
     setUser(res.data.data.user);
-
     return res.data.data.user;
   };
 
   // LOGOUT
   const logout = async () => {
     await API.post("/auth/logout");
+    localStorage.removeItem("accessToken"); // ✅ clear token
     setUser(null);
   };
 
