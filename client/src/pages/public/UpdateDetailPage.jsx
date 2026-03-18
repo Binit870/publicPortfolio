@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Eye, Heart, Bookmark, Share2, Clock, Calendar } from "lucide-react";
+import { ArrowLeft, Clock, Calendar } from "lucide-react";
 // import Navbar from "@/components/blog/Navbar";
 import Footer from "@/components/blog/Footer";
 import NewsletterStrip from "@/components/blog/NewsletterStrip";
@@ -146,24 +146,6 @@ const UpdateDetailPage = () => {
                 {post.content}
               </div>
             </div>
-
-            {/* Stats */}
-            <div className="flex gap-6 text-sm text-muted-foreground border-t border-border pt-6 mt-10">
-              <span className="flex items-center gap-1.5">
-                <Eye size={14} /> {post.stats?.views?.toLocaleString() || 0}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Heart size={14} /> {post.stats?.likes?.toLocaleString() || 0}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Bookmark size={14} /> {post.stats?.bookmarks?.toLocaleString() || 0}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <Share2 size={14} /> {post.stats?.shares?.toLocaleString() || 0}
-              </span>
-            </div>
-
-            
 
             {/* Related posts */}
             {related.length > 0 && (

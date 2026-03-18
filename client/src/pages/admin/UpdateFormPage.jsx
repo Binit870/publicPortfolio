@@ -203,22 +203,20 @@ const UpdateFormPage = () => {
   const [loadingPost, setLoadingPost] = useState(isEdit);
   const [activeTab, setActiveTab] = useState("content");
 
-  /* load existing post for edit */
+  /* ✅ FIXED — load existing post by its ID directly (includes content field) */
   useEffect(() => {
     if (!isEdit) return;
     (async () => {
       try {
-        const data  = await apiFetch(ADMIN_API, { limit: 1000 });
-        const blogs = data.blogs ?? data.data ?? [];
-        const found = blogs.find((b) => b._id === id);
+        const found = await apiFetch(`${ADMIN_API}/${id}`);
         if (!found) throw new Error("Post not found");
 
-        if (found.slug) setSlug(found.slug);               // ✅ store slug
+        if (found.slug) setSlug(found.slug);
 
         setForm({
           title:         found.title          ?? "",
           excerpt:       found.excerpt         ?? "",
-          content:       found.content         ?? "",
+          content:       found.content         ?? "",   // ✅ now included — getBlogById has no .select("-content")
           category:      found.category        ?? "",
           tags:          found.tags            ?? [],
           status:        found.status          ?? "draft",

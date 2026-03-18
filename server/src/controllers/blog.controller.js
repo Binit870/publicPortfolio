@@ -84,6 +84,16 @@ export const getAllBlogs = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, paginatedResponse(blogs, total, page, limit), "Blogs fetched"));
 });
 
+// ✅ NEW — fetch a single blog by ID (includes content, for edit page)
+export const getBlogById = asyncHandler(async (req, res) => {
+  const blog = await Blog.findById(req.params.id).populate("author", "name");
+  if (!blog) throw new ApiError(404, "Blog not found");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, blog, "Blog fetched"));
+});
+
 export const createBlog = asyncHandler(async (req, res) => {
   const slug        = await generateUniqueSlug(req.body.title);
   const readingTime = calculateReadingTime(req.body.content);

@@ -1,7 +1,4 @@
-import { Eye, Heart, Bookmark } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const formatNum = (n) => (n >= 1000 ? (n / 1000).toFixed(1) + "k" : n);
 
 export default function BlogCard({ post }) {
   if (!post) return null;
@@ -32,18 +29,7 @@ export default function BlogCard({ post }) {
           {post.excerpt}
         </p>
 
-        <div className="flex items-center justify-between">
-          <div className="flex gap-3 text-xs text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Eye size={12} /> {formatNum(post.stats?.views || 0)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Heart size={12} /> {formatNum(post.stats?.likes || 0)}
-            </span>
-            <span className="flex items-center gap-1">
-              <Bookmark size={12} /> {formatNum(post.stats?.bookmarks || 0)}
-            </span>
-          </div>
+        <div className="flex items-center justify-end">
           <Button size="sm" variant="outline">Read</Button>
         </div>
       </div>
