@@ -62,9 +62,7 @@ const GalleryItemFormPage = () => {
     try {
       const res = await getGalleriesApi();
       setGalleries(res.data || []);
-    } catch {
-      // galleries optional
-    }
+    } catch {}
   };
 
   const fetchItem = async () => {
@@ -75,7 +73,7 @@ const GalleryItemFormPage = () => {
         setForm({
           title: item.title || "",
           description: item.description || "",
-          mediaType: item.mediaType || "image",
+          mediaType: item.mediaType === "video" ? "image" : item.mediaType || "image",
           category: item.category || "",
           tags: item.tags?.join(", ") || "",
           altText: item.altText || "",
@@ -157,31 +155,17 @@ const GalleryItemFormPage = () => {
       <Toaster position="top-right" />
       <div className="max-w-3xl mx-auto px-6 py-10">
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <button
-              onClick={() => navigate("/admin/gallery")}
-              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-smooth mb-3"
-            >
-              <ArrowLeft size={14} /> Back to Gallery
-            </button>
-            <h1 className="text-2xl font-bold font-poppins text-foreground">
-              {isEdit ? "Edit Gallery Item" : "Add Gallery Item"}
-            </h1>
-          </div>
+        {/* Header — no save button here */}
+        <div className="mb-8">
           <button
-            onClick={handleSubmit}
-            disabled={saving}
-            className="btn-primary flex items-center gap-2"
+            onClick={() => navigate("/admin/gallery")}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-smooth mb-3"
           >
-            {saving ? (
-              <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-            ) : (
-              <Save size={14} />
-            )}
-            {saving ? "Saving..." : isEdit ? "Update" : "Add Item"}
+            <ArrowLeft size={14} /> Back to Gallery
           </button>
+          <h1 className="text-2xl font-bold font-poppins text-foreground">
+            {isEdit ? "Edit Gallery Item" : "Add Gallery Item"}
+          </h1>
         </div>
 
         <div className="space-y-6">
@@ -190,13 +174,13 @@ const GalleryItemFormPage = () => {
           <SectionCard title="Media Upload">
             <div className="space-y-4">
 
-              {/* Media type selector */}
+              {/* Media type — image and gif only */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-bold text-primary tracking-[0.15em] uppercase">
                   Media Type
                 </label>
                 <div className="flex gap-3">
-                  {["image", "video", "gif"].map((type) => (
+                  {["image", "gif"].map((type) => (
                     <button
                       key={type}
                       onClick={() => setForm((prev) => ({ ...prev, mediaType: type }))}
@@ -219,20 +203,11 @@ const GalleryItemFormPage = () => {
               >
                 {mediaPreview ? (
                   <div className="relative">
-                    {form.mediaType === "image" || form.mediaType === "gif" ? (
-                      <img
-                        src={mediaPreview}
-                        alt="Preview"
-                        className="max-h-48 mx-auto rounded-xl object-contain"
-                      />
-                    ) : (
-                      <div className="flex items-center justify-center h-32 text-muted-foreground">
-                        <div className="text-center">
-                          <div className="text-4xl mb-2">🎬</div>
-                          <p className="text-sm">Video selected</p>
-                        </div>
-                      </div>
-                    )}
+                    <img
+                      src={mediaPreview}
+                      alt="Preview"
+                      className="max-h-48 mx-auto rounded-xl object-contain"
+                    />
                     {mediaFile && (
                       <button
                         onClick={(e) => { e.stopPropagation(); clearMedia(); }}
@@ -246,14 +221,10 @@ const GalleryItemFormPage = () => {
                   <div className="py-6">
                     <Upload size={32} className="mx-auto text-muted-foreground mb-3" />
                     <p className="text-sm font-medium text-foreground">
-                      Click to upload {form.mediaType}
+                      Click to upload {form.mediaType === "gif" ? "GIF" : "image"}
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {form.mediaType === "image"
-                        ? "JPG, PNG, WEBP up to 10MB"
-                        : form.mediaType === "video"
-                        ? "MP4, MOV up to 50MB"
-                        : "GIF up to 20MB"}
+                      {form.mediaType === "gif" ? "GIF up to 20MB" : "JPG, PNG, WEBP up to 20MB"}
                     </p>
                   </div>
                 )}
@@ -262,13 +233,7 @@ const GalleryItemFormPage = () => {
               <input
                 ref={fileInputRef}
                 type="file"
-                accept={
-                  form.mediaType === "image"
-                    ? "image/*"
-                    : form.mediaType === "video"
-                    ? "video/*"
-                    : "image/gif"
-                }
+                accept={form.mediaType === "gif" ? "image/gif" : "image/*"}
                 className="hidden"
                 onChange={handleFileChange}
               />
@@ -382,7 +347,7 @@ const GalleryItemFormPage = () => {
             </div>
           </SectionCard>
 
-          {/* Save */}
+          {/* Save — bottom only */}
           <div className="flex justify-end pt-2">
             <button
               onClick={handleSubmit}

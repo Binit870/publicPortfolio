@@ -1,37 +1,63 @@
 import { useParams, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Eye, Heart, Bookmark, Share2, Clock, Calendar } from "lucide-react";
+// import Navbar from "@/components/blog/Navbar";
 import Footer from "@/components/blog/Footer";
 import NewsletterStrip from "@/components/blog/NewsletterStrip";
-import TrendingCard from "@/components/blog/TrendingCard";
 import SeriesCard from "@/components/blog/SeriesCard";
+import TrendingCard from "@/components/blog/TrendingCard";
 import PopularTags from "@/components/blog/PopularTag";
-import { blogPosts, featuredPost } from "@/data/BlogData";
+import { getBlogBySlugApi, getPublishedBlogsApi } from "@/api/blog.api";
 
 const UpdateDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [post, setPost] = useState(null);
+  const [related, setRelated] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  // find post from local data
-  // TODO: replace with API fetch when backend is ready
-  // useEffect(() => { fetchBlogBySlug(slug) }, [slug])
-  const allPosts = [featuredPost, ...blogPosts];
-  const post = allPosts.find((p) => p.slug === slug);
+  useEffect(() => {
+    const fetchPost = async () => {
+      setLoading(true);
+      try {
+        const res = await getBlogBySlugApi(slug);
+        const fetchedPost = res.data;
+        setPost(fetchedPost);
 
-  // related posts — same category, exclude current
-  const related = blogPosts
-    .filter((p) => p.category === post?.category && p.slug !== slug)
-    .slice(0, 2);
+        // fetch related — same category
+        const relatedRes = await getPublishedBlogsApi({
+          category: fetchedPost.category,
+          limit: 3,
+        });
+        const relatedPosts = (relatedRes.data.data || []).filter(
+          (p) => p.slug !== slug
+        ).slice(0, 2);
+        setRelated(relatedPosts);
+      } catch {
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPost();
+  }, [slug]);
 
-  if (!post) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center px-6">
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
+  if (error || !post) {
+    return (
+      <div className="min-h-screen flex items-center justify-center text-center px-6">
+        <div>
           <div className="text-6xl mb-4">📭</div>
-          <h2 className="text-2xl font-bold font-poppins mb-3">Post not found</h2>
-          <p className="text-muted-foreground mb-6 text-sm">
-            This post may have been moved or deleted.
-          </p>
-          <button className="btn-primary" onClick={() => navigate("/updates")}>
+          <h2 className="text-2xl font-bold mb-3">Post not found</h2>
+          <button className="btn-primary" onClick={() => navigate(-1)}>
             Back to Updates
           </button>
         </div>
@@ -41,6 +67,7 @@ const UpdateDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* <Navbar /> */}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="flex flex-col lg:flex-row gap-10">
@@ -48,26 +75,32 @@ const UpdateDetailPage = () => {
           {/* Main article */}
           <article className="flex-1 min-w-0">
 
-            {/* Back button */}
             <button
-              onClick={() => navigate("/updates")}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-smooth mb-8"
             >
-              <ArrowLeft size={16} />
-              Back to Updates
+              <ArrowLeft size={16} /> Back to Updates
             </button>
 
             {/* Cover */}
-            <div className={`w-full h-64 md:h-80 rounded-2xl bg-gradient-to-br ${post.coverGradient} flex items-center justify-center text-8xl mb-8`}>
-              📝
-            </div>
+            {post.coverImage ? (
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-64 md:h-80 object-cover rounded-2xl mb-8"
+              />
+            ) : (
+              <div className="w-full h-64 md:h-80 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center text-8xl mb-8">
+                📝
+              </div>
+            )}
 
-            {/* Category + meta */}
+            {/* Meta */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span className="green-pill">{post.category}</span>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Calendar size={12} />
-                <span>{post.publishedAt}</span>
+                <span>{new Date(post.createdAt).toDateString()}</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Clock size={12} />
@@ -81,65 +114,56 @@ const UpdateDetailPage = () => {
             </h1>
 
             {/* Tags */}
-            <div className="flex flex-wrap gap-2 mb-8">
-              {post.tags.map((tag) => (
+            <div className="flex flex-wrap gap-2 mb-6">
+              {post.tags?.map((tag) => (
                 <span key={tag} className="green-pill">{tag}</span>
               ))}
             </div>
 
-            {/* Author row */}
+            {/* Author */}
             <div className="flex items-center gap-3 mb-8 p-4 bg-section-alt rounded-xl">
               <div className="w-10 h-10 rounded-full bg-primary/10 text-primary font-bold text-sm flex items-center justify-center">
-                {post.author.avatar}
+                {post.author?.name?.slice(0, 2).toUpperCase() || "AU"}
               </div>
               <div>
-                <p className="text-sm font-semibold text-foreground">{post.author.name}</p>
-                <p className="text-xs text-muted-foreground">@{post.author.username}</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {post.author?.name || "Author"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {new Date(post.createdAt).toDateString()}
+                </p>
               </div>
             </div>
 
-            {/* Article body — excerpt as placeholder */}
-            {/* TODO: replace with full content from backend */}
-            <div className="prose max-w-none">
-              <p className="text-muted-foreground leading-relaxed text-base mb-6">
+            {/* Content */}
+            <div className="prose max-w-none text-foreground">
+              <p className="text-muted-foreground leading-relaxed text-base mb-4">
                 {post.excerpt}
               </p>
-              <p className="text-muted-foreground leading-relaxed text-base mb-6">
-                This is where the full article content will be rendered once connected to the backend. The content field from the Blog model will be displayed here using a rich text renderer.
-              </p>
-              <p className="text-muted-foreground leading-relaxed text-base">
-                Stay tuned for the complete article. In the meantime, explore other posts in the {post.category} category.
-              </p>
+              {/* render content as plain text for now */}
+              {/* TODO: use a markdown renderer like react-markdown */}
+              <div className="whitespace-pre-line text-muted-foreground leading-relaxed">
+                {post.content}
+              </div>
             </div>
 
-            {/* Stats bar */}
+            {/* Stats */}
             <div className="flex gap-6 text-sm text-muted-foreground border-t border-border pt-6 mt-10">
               <span className="flex items-center gap-1.5">
-                <Eye size={14} /> {post.stats.views.toLocaleString()}
+                <Eye size={14} /> {post.stats?.views?.toLocaleString() || 0}
               </span>
               <span className="flex items-center gap-1.5">
-                <Heart size={14} /> {post.stats.likes.toLocaleString()}
+                <Heart size={14} /> {post.stats?.likes?.toLocaleString() || 0}
               </span>
               <span className="flex items-center gap-1.5">
-                <Bookmark size={14} /> {post.stats.bookmarks.toLocaleString()}
+                <Bookmark size={14} /> {post.stats?.bookmarks?.toLocaleString() || 0}
               </span>
               <span className="flex items-center gap-1.5">
-                <Share2 size={14} /> {post.stats.shares.toLocaleString()}
+                <Share2 size={14} /> {post.stats?.shares?.toLocaleString() || 0}
               </span>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex gap-3 mt-6">
-              <button className="btn-primary gap-2 flex items-center">
-                <Heart size={16} /> Like
-              </button>
-              <button className="btn-outline-primary gap-2 flex items-center">
-                <Bookmark size={16} /> Bookmark
-              </button>
-              <button className="btn-outline-primary gap-2 flex items-center">
-                <Share2 size={16} /> Share
-              </button>
-            </div>
+            
 
             {/* Related posts */}
             {related.length > 0 && (
@@ -154,9 +178,17 @@ const UpdateDetailPage = () => {
                       className="card-portfolio p-5 cursor-pointer group"
                       onClick={() => navigate(`/updates/${p.slug}`)}
                     >
-                      <div className={`w-full h-28 rounded-xl bg-gradient-to-br ${p.coverGradient} flex items-center justify-center text-4xl mb-4`}>
-                        📄
-                      </div>
+                      {p.coverImage ? (
+                        <img
+                          src={p.coverImage}
+                          alt={p.title}
+                          className="w-full h-28 object-cover rounded-xl mb-4"
+                        />
+                      ) : (
+                        <div className="w-full h-28 rounded-xl bg-gradient-to-br from-primary/20 to-secondary/10 flex items-center justify-center text-4xl mb-4">
+                          📄
+                        </div>
+                      )}
                       <span className="green-pill mb-2 inline-block">{p.category}</span>
                       <h4 className="font-bold text-sm text-foreground leading-snug group-hover:text-primary transition-smooth">
                         {p.title}

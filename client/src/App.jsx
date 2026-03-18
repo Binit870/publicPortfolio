@@ -29,6 +29,8 @@ import EventsAdminPage from "./pages/admin/EventsAdminPage";
 import EventFormPage from "./pages/admin/EventFormPage";
 import GalleryAdminPage from "./pages/admin/GalleryAdminPage";
 import GalleryItemFormPage from "./pages/admin/GalleryItemFormPage";
+import UpdatesAdminPage from "./pages/admin/UpdatesAdminPage";
+import UpdateFormPage from "./pages/admin/UpdateFormPage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -85,6 +87,9 @@ function Layout() {
             <Route path="/admin/gallery" element={<GalleryAdminPage />} />
             <Route path="/admin/gallery/items/new" element={<GalleryItemFormPage />} />
             <Route path="/admin/gallery/items/:id/edit" element={<GalleryItemFormPage />} />
+            <Route path="/admin/updates" element={<UpdatesAdminPage />} />
+            <Route path="/admin/updates/new" element={<UpdateFormPage />} />
+            <Route path="/admin/updates/edit/:id" element={<UpdateFormPage />} />
             {/* <Route path="/admin/events" element={<AdminEvents />} /> */}
 
           </Route>

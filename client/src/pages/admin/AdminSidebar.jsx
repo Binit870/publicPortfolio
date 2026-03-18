@@ -96,6 +96,8 @@ export default function AdminSidebar() {
 
           {navBtn("/admin/gallery", <Images size={20} />, "Gallery")}
 
+          {navBtn("/admin/updates", <Images size={20} />, "Updates")}
+
           {/* MANAGE */}
           <div>
             <button

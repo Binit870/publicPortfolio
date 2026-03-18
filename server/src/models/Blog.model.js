@@ -43,6 +43,7 @@ const blogSchema = new mongoose.Schema(
       enum: ["draft", "published", "archived"],
       default: "draft",
     },
+
     allowComments: { type: Boolean, default: true },
     relatedPosts: [
       {
@@ -53,5 +54,7 @@ const blogSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+blogSchema.index({ slug: 1 });
+blogSchema.index({ status: 1, createdAt: -1 });
 
 export default mongoose.model("Blog", blogSchema);
