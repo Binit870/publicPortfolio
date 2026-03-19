@@ -31,6 +31,7 @@ import GalleryAdminPage from "./pages/admin/GalleryAdminPage";
 import GalleryItemFormPage from "./pages/admin/GalleryItemFormPage";
 import UpdatesAdminPage from "./pages/admin/UpdatesAdminPage";
 import UpdateFormPage from "./pages/admin/UpdateFormPage";
+import ProfileAdminPage from "./pages/admin/ProfileAdminPage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -90,6 +91,7 @@ function Layout() {
             <Route path="/admin/updates" element={<UpdatesAdminPage />} />
             <Route path="/admin/updates/new" element={<UpdateFormPage />} />
             <Route path="/admin/updates/edit/:id" element={<UpdateFormPage />} />
+            <Route path="/admin/profile" element={<ProfileAdminPage />} />
             {/* <Route path="/admin/events" element={<AdminEvents />} /> */}
 
           </Route>
