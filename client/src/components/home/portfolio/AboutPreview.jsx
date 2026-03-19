@@ -194,9 +194,7 @@ const AboutPreview = () => {
                 ))}
               </div>
 
-              <button className="btn-ap">
-                Read More <ArrowRight size={14} />
-              </button>
+              
             </div>
 
           </div>
