@@ -22,13 +22,6 @@ const T = {
   textSub:     "#6B5E4A",
 };
 
-/*
-  ENDPOINTS (matched exactly to your route files):
-  GET /admin/blogs/      → blog.admin.routes    → router.get("/")
-  GET /admin/events/     → event.admin.routes   → router.get("/")
-  GET /admin/messages/   → message.admin.routes → router.get("/")
-  GET /gallery/items     → public gallery route → router.get("/items")
-*/
 const statConfigs = [
   {
     key: "blogs",
@@ -98,11 +91,27 @@ const statConfigs = [
 
 /* ─────────────── FETCH HELPER ─────────────── */
 async function fetchCount(endpoint) {
-  // append limit=1 to reduce payload — we only need `total` from paginatedResponse
   const sep = endpoint.includes("?") ? "&" : "?";
   const { data } = await API.get(`${endpoint}${sep}limit=1`);
-  // paginatedResponse shape: { data: [...], total, page, limit, totalPages }
   return data?.data?.pagination?.total ?? 0;
+}
+
+/* ─────────────── RESPONSIVE HOOK ─────────────── */
+function useBreakpoint() {
+  const [width, setWidth] = useState(
+    typeof window !== "undefined" ? window.innerWidth : 1024
+  );
+  useEffect(() => {
+    const handler = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, []);
+  return {
+    isMobile:  width < 480,
+    isTablet:  width >= 480 && width < 768,
+    isDesktop: width >= 768,
+    width,
+  };
 }
 
 /* ─────────────── SHIMMER ─────────────── */
@@ -118,7 +127,7 @@ function Shimmer({ w = "100%", h = "1rem", r = "5px" }) {
 }
 
 /* ─────────────── STAT CARD ─────────────── */
-function StatCard({ cfg, data, loading, index }) {
+function StatCard({ cfg, data, loading, index, isMobile }) {
   const [hovered, setHovered] = useState(false);
   const { total, sub } = data || {};
 
@@ -136,7 +145,8 @@ function StatCard({ cfg, data, loading, index }) {
         borderColor:       hovered ? cfg.color + "66" : T.border,
         borderTopColor:    cfg.color,
         borderRadius:      "14px",
-        padding:           "1.5rem",
+        /* Tighter padding on mobile */
+        padding:           isMobile ? "1.1rem" : "1.5rem",
         position:          "relative",
         overflow:          "hidden",
         transition:        "all 0.22s ease",
@@ -146,6 +156,10 @@ function StatCard({ cfg, data, loading, index }) {
         animation:         "fadeUp 0.45s ease both",
         animationDelay:    `${index * 85}ms`,
         cursor:            "default",
+        /* On mobile, side-by-side layout inside the card */
+        display:           isMobile ? "flex" : "block",
+        alignItems:        isMobile ? "center" : undefined,
+        gap:               isMobile ? "1rem" : undefined,
       }}
     >
       {/* Corner glow */}
@@ -158,75 +172,144 @@ function StatCard({ cfg, data, loading, index }) {
         pointerEvents: "none",
       }} />
 
-      {/* Label + Icon */}
-      <div style={{
-        display: "flex", alignItems: "center",
-        justifyContent: "space-between", marginBottom: "1rem",
-      }}>
-        <span style={{
-          fontFamily: "'Rajdhani', sans-serif",
-          fontSize: "0.72rem", fontWeight: 700,
-          letterSpacing: "0.13em", textTransform: "uppercase",
-          color: T.muted,
-        }}>{cfg.label}</span>
-        <div style={{
-          width: 38, height: 38, borderRadius: "10px",
-          background: cfg.light,
-          borderWidth: "1.5px", borderStyle: "solid", borderColor: cfg.mid,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: cfg.color,
-          transition: "transform 0.2s",
-          transform: hovered ? "scale(1.1)" : "scale(1)",
-        }}>{cfg.icon}</div>
-      </div>
+      {/* On mobile: icon is on the left, stats on the right */}
+      {isMobile ? (
+        <>
+          {/* Icon block */}
+          <div style={{
+            flexShrink: 0,
+            width: 44, height: 44, borderRadius: "12px",
+            background: cfg.light,
+            borderWidth: "1.5px", borderStyle: "solid", borderColor: cfg.mid,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            color: cfg.color,
+          }}>{cfg.icon}</div>
 
-      {/* Total */}
-      <div style={{ marginBottom: cfg.subStats.length > 0 ? "1rem" : 0 }}>
-        {loading ? (
-          <Shimmer w="72px" h="2.6rem" r="7px" />
-        ) : total === null || total === undefined ? (
-          <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "2rem", color: T.muted }}>—</span>
-        ) : (
-          <span style={{
-            fontFamily: "'Rajdhani', sans-serif",
-            fontSize: "2.8rem", fontWeight: 700,
-            color: cfg.color, lineHeight: 1, letterSpacing: "-0.02em",
-          }}>
-            {Number(total).toLocaleString()}
-          </span>
-        )}
-      </div>
-
-      {/* Sub-stat pills */}
-      {cfg.subStats.length > 0 && (
-        <div style={{
-          borderTopWidth: "1px", borderTopStyle: "solid", borderTopColor: T.border,
-          paddingTop: "0.85rem",
-          display: "flex", flexWrap: "wrap", gap: "0.45rem",
-        }}>
-          {cfg.subStats.map((s) => (
-            <div key={s.label} style={{
-              display: "flex", alignItems: "center", gap: "0.35rem",
-              background: T.offWhite,
-              borderWidth: "1px", borderStyle: "solid", borderColor: T.borderStrong,
-              borderRadius: "6px", padding: "0.25rem 0.6rem",
-            }}>
-              <span style={{
-                fontFamily: "'DM Mono', monospace",
-                fontSize: "0.62rem", color: T.muted,
-                textTransform: "uppercase", letterSpacing: "0.05em",
-              }}>{s.label}</span>
+          {/* Right: label + total + sub-pills */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.3rem" }}>
               <span style={{
                 fontFamily: "'Rajdhani', sans-serif",
-                fontSize: "0.88rem", fontWeight: 700, color: cfg.color,
-              }}>
-                {loading
-                  ? <Shimmer w="24px" h="0.8rem" r="3px" />
-                  : Number(sub?.[s.label] ?? 0).toLocaleString()}
-              </span>
+                fontSize: "0.68rem", fontWeight: 700,
+                letterSpacing: "0.13em", textTransform: "uppercase",
+                color: T.muted,
+              }}>{cfg.label}</span>
+              {loading
+                ? <Shimmer w="52px" h="1.8rem" r="5px" />
+                : (
+                  <span style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontSize: "2rem", fontWeight: 700,
+                    color: cfg.color, lineHeight: 1, letterSpacing: "-0.02em",
+                  }}>
+                    {total === null || total === undefined ? "—" : Number(total).toLocaleString()}
+                  </span>
+                )
+              }
             </div>
-          ))}
-        </div>
+
+            {cfg.subStats.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+                {cfg.subStats.map((s) => (
+                  <div key={s.label} style={{
+                    display: "flex", alignItems: "center", gap: "0.3rem",
+                    background: T.offWhite,
+                    borderWidth: "1px", borderStyle: "solid", borderColor: T.borderStrong,
+                    borderRadius: "6px", padding: "0.2rem 0.5rem",
+                  }}>
+                    <span style={{
+                      fontFamily: "'DM Mono', monospace",
+                      fontSize: "0.58rem", color: T.muted,
+                      textTransform: "uppercase", letterSpacing: "0.05em",
+                    }}>{s.label}</span>
+                    <span style={{
+                      fontFamily: "'Rajdhani', sans-serif",
+                      fontSize: "0.82rem", fontWeight: 700, color: cfg.color,
+                    }}>
+                      {loading
+                        ? <Shimmer w="20px" h="0.7rem" r="3px" />
+                        : Number(sub?.[s.label] ?? 0).toLocaleString()}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      ) : (
+        /* ── Original desktop layout ── */
+        <>
+          {/* Label + Icon */}
+          <div style={{
+            display: "flex", alignItems: "center",
+            justifyContent: "space-between", marginBottom: "1rem",
+          }}>
+            <span style={{
+              fontFamily: "'Rajdhani', sans-serif",
+              fontSize: "0.72rem", fontWeight: 700,
+              letterSpacing: "0.13em", textTransform: "uppercase",
+              color: T.muted,
+            }}>{cfg.label}</span>
+            <div style={{
+              width: 38, height: 38, borderRadius: "10px",
+              background: cfg.light,
+              borderWidth: "1.5px", borderStyle: "solid", borderColor: cfg.mid,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              color: cfg.color,
+              transition: "transform 0.2s",
+              transform: hovered ? "scale(1.1)" : "scale(1)",
+            }}>{cfg.icon}</div>
+          </div>
+
+          {/* Total */}
+          <div style={{ marginBottom: cfg.subStats.length > 0 ? "1rem" : 0 }}>
+            {loading ? (
+              <Shimmer w="72px" h="2.6rem" r="7px" />
+            ) : total === null || total === undefined ? (
+              <span style={{ fontFamily: "'Rajdhani', sans-serif", fontSize: "2rem", color: T.muted }}>—</span>
+            ) : (
+              <span style={{
+                fontFamily: "'Rajdhani', sans-serif",
+                fontSize: "2.8rem", fontWeight: 700,
+                color: cfg.color, lineHeight: 1, letterSpacing: "-0.02em",
+              }}>
+                {Number(total).toLocaleString()}
+              </span>
+            )}
+          </div>
+
+          {/* Sub-stat pills */}
+          {cfg.subStats.length > 0 && (
+            <div style={{
+              borderTopWidth: "1px", borderTopStyle: "solid", borderTopColor: T.border,
+              paddingTop: "0.85rem",
+              display: "flex", flexWrap: "wrap", gap: "0.45rem",
+            }}>
+              {cfg.subStats.map((s) => (
+                <div key={s.label} style={{
+                  display: "flex", alignItems: "center", gap: "0.35rem",
+                  background: T.offWhite,
+                  borderWidth: "1px", borderStyle: "solid", borderColor: T.borderStrong,
+                  borderRadius: "6px", padding: "0.25rem 0.6rem",
+                }}>
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace",
+                    fontSize: "0.62rem", color: T.muted,
+                    textTransform: "uppercase", letterSpacing: "0.05em",
+                  }}>{s.label}</span>
+                  <span style={{
+                    fontFamily: "'Rajdhani', sans-serif",
+                    fontSize: "0.88rem", fontWeight: 700, color: cfg.color,
+                  }}>
+                    {loading
+                      ? <Shimmer w="24px" h="0.8rem" r="3px" />
+                      : Number(sub?.[s.label] ?? 0).toLocaleString()}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
       )}
     </div>
   );
@@ -235,6 +318,7 @@ function StatCard({ cfg, data, loading, index }) {
 /* ─────────────── MAIN PAGE ─────────────── */
 export default function AdminDashboardPage() {
   const { user, loading: authLoading } = useAuth();
+  const { isMobile, isTablet, width } = useBreakpoint();
 
   const [stats, setStats]       = useState({});
   const [loading, setLoading]   = useState(true);
@@ -290,7 +374,6 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
-  // Only fire after AuthContext confirms the user is logged in
   useEffect(() => {
     if (!authLoading && user) {
       loadStats(false);
@@ -300,6 +383,15 @@ export default function AdminDashboardPage() {
   const now = new Date();
 
   if (authLoading) return null;
+
+  /* ── Responsive grid columns ── */
+  const gridCols = isMobile
+    ? "1fr"
+    : isTablet
+    ? "repeat(2, 1fr)"
+    : width < 1024
+    ? "repeat(2, 1fr)"
+    : "repeat(auto-fill, minmax(230px, 1fr))";
 
   return (
     <>
@@ -315,6 +407,38 @@ export default function AdminDashboardPage() {
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ── Responsive overrides ── */
+        @media (max-width: 479px) {
+          .dash-header {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+          }
+          .dash-refresh-btn {
+            width: 100% !important;
+            justify-content: center !important;
+          }
+          .dash-title {
+            font-size: 1.55rem !important;
+          }
+          .dash-meta {
+            font-size: 0.62rem !important;
+          }
+          .dash-section-label {
+            font-size: 0.6rem !important;
+          }
+          .dash-footer {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 0.75rem !important;
+          }
+        }
+
+        @media (max-width: 767px) {
+          .dash-header {
+            gap: 0.75rem !important;
+          }
+        }
       `}</style>
 
       <div style={{
@@ -326,18 +450,29 @@ export default function AdminDashboardPage() {
         `,
         color: T.text,
         fontFamily: "'DM Sans', sans-serif",
-        padding: "2rem clamp(1rem, 5vw, 3rem)",
+        /* Fluid padding: tighter on mobile, wider on desktop */
+        padding: isMobile
+          ? "1.25rem 1rem"
+          : isTablet
+          ? "1.5rem 1.25rem"
+          : "2rem clamp(1rem, 5vw, 3rem)",
       }}>
 
         {/* ── Header ── */}
-        <div style={{
-          display: "flex", alignItems: "flex-start",
-          justifyContent: "space-between", flexWrap: "wrap",
-          gap: "1rem", marginBottom: "1.5rem",
-          animation: "fadeUp 0.4s ease both",
-        }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.4rem" }}>
+        <div
+          className="dash-header"
+          style={{
+            display: "flex",
+            alignItems: isMobile ? "flex-start" : "flex-start",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: "1rem",
+            marginBottom: "1.5rem",
+            animation: "fadeUp 0.4s ease both",
+          }}
+        >
+          <div style={{ flex: "1 1 0", minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.7rem", marginBottom: "0.4rem", flexWrap: "wrap" }}>
               {/* Tricolor flag pin */}
               <div style={{ display: "flex", flexDirection: "column", gap: "3px", flexShrink: 0 }}>
                 {[T.saffron, T.white, T.green].map((c, i) => (
@@ -349,20 +484,30 @@ export default function AdminDashboardPage() {
                   }} />
                 ))}
               </div>
-              <h1 style={{
-                fontFamily: "'Rajdhani', sans-serif",
-                fontSize: "clamp(1.7rem, 4vw, 2.3rem)",
-                fontWeight: 700, letterSpacing: "0.05em", lineHeight: 1,
-              }}>
+              <h1
+                className="dash-title"
+                style={{
+                  fontFamily: "'Rajdhani', sans-serif",
+                  fontSize: "clamp(1.5rem, 5vw, 2.3rem)",
+                  fontWeight: 700, letterSpacing: "0.05em", lineHeight: 1,
+                  wordBreak: "break-word",
+                }}
+              >
                 <span style={{ color: T.saffron }}>ADMIN</span>
                 {" "}
                 <span style={{ color: T.green }}>DASHBOARD</span>
               </h1>
             </div>
-            <p style={{
-              fontFamily: "'DM Mono', monospace",
-              fontSize: "0.7rem", color: T.muted, letterSpacing: "0.05em",
-            }}>
+            <p
+              className="dash-meta"
+              style={{
+                fontFamily: "'DM Mono', monospace",
+                fontSize: "0.7rem", color: T.muted, letterSpacing: "0.05em",
+                /* Allow wrapping on very small screens */
+                whiteSpace: isMobile ? "normal" : "nowrap",
+                overflow: "hidden", textOverflow: "ellipsis",
+              }}
+            >
               {now.toLocaleDateString("en-IN", {
                 weekday: "short", year: "numeric", month: "short", day: "numeric",
               })}
@@ -376,6 +521,7 @@ export default function AdminDashboardPage() {
 
           {/* Refresh button */}
           <button
+            className="dash-refresh-btn"
             onClick={() => loadStats(true)}
             style={{
               display: "flex", alignItems: "center", gap: "0.5rem",
@@ -387,6 +533,10 @@ export default function AdminDashboardPage() {
               fontSize: "0.72rem", letterSpacing: "0.05em",
               transition: "all 0.18s",
               boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+              /* Full-width on mobile */
+              width: isMobile ? "100%" : "auto",
+              justifyContent: isMobile ? "center" : "flex-start",
+              flexShrink: 0,
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.borderColor = T.saffron;
@@ -423,21 +573,24 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* ── Section label ── */}
-        <p style={{
-          fontFamily: "'DM Mono', monospace",
-          fontSize: "0.63rem", letterSpacing: "0.14em",
-          textTransform: "uppercase", color: T.muted,
-          marginBottom: "1rem",
-          animation: "fadeUp 0.4s ease both 0.1s",
-        }}>
+        <p
+          className="dash-section-label"
+          style={{
+            fontFamily: "'DM Mono', monospace",
+            fontSize: "0.63rem", letterSpacing: "0.14em",
+            textTransform: "uppercase", color: T.muted,
+            marginBottom: "1rem",
+            animation: "fadeUp 0.4s ease both 0.1s",
+          }}
+        >
           ▸ Content Overview
         </p>
 
-        {/* ── Cards ── */}
+        {/* ── Cards grid ── */}
         <div style={{
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(230px, 1fr))",
-          gap: "1.1rem",
+          gridTemplateColumns: gridCols,
+          gap: isMobile ? "0.75rem" : "1.1rem",
         }}>
           {statConfigs.map((cfg, i) => (
             <StatCard
@@ -446,19 +599,23 @@ export default function AdminDashboardPage() {
               data={stats[cfg.key]}
               loading={loading}
               index={i}
+              isMobile={isMobile}
             />
           ))}
         </div>
 
         {/* ── Footer ── */}
-        <div style={{
-          marginTop: "2.5rem",
-          borderTopWidth: "1px", borderTopStyle: "solid", borderTopColor: T.border,
-          paddingTop: "1rem",
-          display: "flex", justifyContent: "space-between", alignItems: "center",
-          flexWrap: "wrap", gap: "0.5rem",
-          animation: "fadeUp 0.4s ease both 0.4s",
-        }}>
+        <div
+          className="dash-footer"
+          style={{
+            marginTop: "2.5rem",
+            borderTopWidth: "1px", borderTopStyle: "solid", borderTopColor: T.border,
+            paddingTop: "1rem",
+            display: "flex", justifyContent: "space-between", alignItems: "center",
+            flexWrap: "wrap", gap: "0.5rem",
+            animation: "fadeUp 0.4s ease both 0.4s",
+          }}
+        >
           <span style={{
             fontFamily: "'DM Mono', monospace",
             fontSize: "0.63rem", color: T.muted,

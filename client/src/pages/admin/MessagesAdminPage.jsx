@@ -26,8 +26,8 @@ function StatusBadge({ status }) {
 
 function ConfirmModal({ onConfirm, onCancel }) {
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="bg-white border border-orange-200 rounded-xl p-8 w-80 shadow-2xl">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 backdrop-blur-sm px-4">
+      <div className="bg-white border border-orange-200 rounded-xl p-8 w-full max-w-sm shadow-2xl">
         <p className="text-[10px] tracking-[0.2em] uppercase text-orange-500 font-mono mb-3">
           Confirm Delete
         </p>
@@ -71,14 +71,15 @@ function MessageDrawer({ msg, onClose, onDelete, onMarkReplied }) {
         className="absolute inset-0 bg-black/20 backdrop-blur-sm"
         onClick={onClose}
       />
-      <div className="relative flex flex-col w-full max-w-lg h-full bg-white border-l border-orange-100 shadow-2xl overflow-y-auto">
+      {/* Drawer: full-width on mobile, max-w-lg on desktop */}
+      <div className="relative flex flex-col w-full sm:max-w-lg h-full bg-white border-l border-orange-100 shadow-2xl overflow-y-auto">
 
         {/* Saffron top accent bar */}
         <div className="h-1 w-full bg-gradient-to-r from-orange-400 via-amber-400 to-green-400 flex-shrink-0" />
 
         {/* Header */}
-        <div className="flex items-start gap-3 px-7 py-6 border-b border-orange-100">
-          <div className="flex-1">
+        <div className="flex items-start gap-3 px-5 sm:px-7 py-5 sm:py-6 border-b border-orange-100">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center gap-3 mb-1 flex-wrap">
               <h2 className="text-lg font-bold text-slate-800">
                 {msg.firstName} {msg.lastName}
@@ -91,14 +92,14 @@ function MessageDrawer({ msg, onClose, onDelete, onMarkReplied }) {
           </div>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-700 text-xl leading-none p-1 transition-colors mt-0.5"
+            className="text-slate-400 hover:text-slate-700 text-xl leading-none p-1 transition-colors mt-0.5 flex-shrink-0"
           >
             ✕
           </button>
         </div>
 
         {/* Meta Grid */}
-        <div className="grid grid-cols-2 gap-x-6 gap-y-4 px-7 py-5 border-b border-orange-100 bg-orange-50/40">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4 px-5 sm:px-7 py-5 border-b border-orange-100 bg-orange-50/40">
           {meta.map(({ label, value, full }) => (
             <div key={label} className={full ? "col-span-2" : ""}>
               <p className="text-[9px] tracking-[0.18em] uppercase text-orange-400 font-mono mb-1">
@@ -110,7 +111,7 @@ function MessageDrawer({ msg, onClose, onDelete, onMarkReplied }) {
         </div>
 
         {/* Message Body */}
-        <div className="flex-1 px-7 py-5">
+        <div className="flex-1 px-5 sm:px-7 py-5">
           <p className="text-[9px] tracking-[0.18em] uppercase text-orange-400 font-mono mb-3">
             Message
           </p>
@@ -120,7 +121,7 @@ function MessageDrawer({ msg, onClose, onDelete, onMarkReplied }) {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-3 px-7 py-5 border-t border-orange-100 flex-wrap bg-white">
+        <div className="flex items-center gap-3 px-5 sm:px-7 py-5 border-t border-orange-100 flex-wrap bg-white">
           {!msg.isReplied && (
             <button
               onClick={() => onMarkReplied(msg._id)}
@@ -224,11 +225,11 @@ export default function MessagesAdminPage() {
       {/* Top accent bar */}
       <div className="h-1 w-full bg-gradient-to-r from-orange-400 via-amber-400 to-green-500" />
 
-      <div className="max-w-5xl mx-auto px-6 py-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
-        {/* Page Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-2">
+        {/* ── Page Header ── */}
+        <div className="mb-6 sm:mb-10">
+          <div className="flex items-center gap-3 mb-2 flex-wrap">
             <span className="text-[10px] tracking-[0.2em] uppercase text-orange-500 font-mono">
               Admin / Inbox
             </span>
@@ -238,14 +239,14 @@ export default function MessagesAdminPage() {
               </span>
             )}
           </div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-800">Messages</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-slate-800">Messages</h1>
           <p className="text-sm text-slate-400 mt-1">
             Manage incoming contact form submissions
           </p>
         </div>
 
-        {/* Stats Strip */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        {/* ── Stats Strip ── */}
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 sm:mb-8">
           {[
             {
               label: "Total",
@@ -268,23 +269,24 @@ export default function MessagesAdminPage() {
           ].map(({ label, value, color, text }) => (
             <div
               key={label}
-              className={`rounded-xl border px-5 py-4 shadow-sm ${color}`}
+              className={`rounded-xl border px-3 sm:px-5 py-3 sm:py-4 shadow-sm ${color}`}
             >
               <p className="text-[9px] tracking-[0.18em] uppercase text-slate-400 font-mono mb-1">
                 {label}
               </p>
-              <p className={`text-2xl font-bold ${text}`}>{value}</p>
+              <p className={`text-xl sm:text-2xl font-bold ${text}`}>{value}</p>
             </div>
           ))}
         </div>
 
-        {/* Filter Tabs */}
-        <div className="flex gap-1 mb-5 bg-white border border-orange-200 rounded-lg p-1 w-fit shadow-sm">
+        {/* ── Filter Tabs ── */}
+        {/* On mobile: full-width tabs; on desktop: auto-width */}
+        <div className="flex gap-1 mb-5 bg-white border border-orange-200 rounded-lg p-1 w-full sm:w-fit shadow-sm">
           {tabs.map((tab) => (
             <button
               key={tab}
               onClick={() => { setFilter(tab); setPage(1); }}
-              className={`px-4 py-1.5 rounded-md text-[11px] font-mono tracking-widest uppercase transition-all ${
+              className={`flex-1 sm:flex-none px-3 sm:px-4 py-1.5 rounded-md text-[11px] font-mono tracking-widest uppercase transition-all ${
                 filter === tab
                   ? "bg-orange-500 text-white shadow-sm"
                   : "text-slate-400 hover:text-slate-700"
@@ -295,10 +297,10 @@ export default function MessagesAdminPage() {
           ))}
         </div>
 
-        {/* Table */}
+        {/* ── Message List ── */}
         <div className="bg-white border border-orange-100 rounded-xl overflow-hidden shadow-sm">
 
-          {/* Table Head */}
+          {/* Table Head — hidden on mobile */}
           <div className="hidden sm:grid grid-cols-[2fr_2fr_1.2fr_90px_20px] gap-4 px-5 py-3 border-b border-orange-100 bg-orange-50">
             {["Sender", "Preview", "Date", "Status", ""].map((h) => (
               <span
@@ -329,55 +331,67 @@ export default function MessagesAdminPage() {
                   key={msg._id}
                   onClick={() => handleOpen(msg._id)}
                   className={`
-                    group grid grid-cols-1 sm:grid-cols-[2fr_2fr_1.2fr_90px_20px] gap-2 sm:gap-4
-                    px-5 py-4 border-b border-orange-50 cursor-pointer
+                    group cursor-pointer border-b border-orange-50
                     hover:bg-orange-50/60 transition-colors
                     ${isUnread ? "bg-amber-50/40" : "bg-white"}
                   `}
                 >
-                  <div className="min-w-0">
-                    <p
-                      className={`text-sm mb-0.5 truncate ${
-                        isUnread
-                          ? "font-semibold text-slate-800"
-                          : "font-normal text-slate-600"
-                      }`}
-                    >
-                      {isUnread && (
-                        <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-2 mb-0.5 align-middle" />
-                      )}
-                      {msg.firstName} {msg.lastName}
+                  {/* ── Desktop row (sm+) ── */}
+                  <div className="hidden sm:grid grid-cols-[2fr_2fr_1.2fr_90px_20px] gap-4 px-5 py-4">
+                    <div className="min-w-0">
+                      <p className={`text-sm mb-0.5 truncate ${isUnread ? "font-semibold text-slate-800" : "font-normal text-slate-600"}`}>
+                        {isUnread && (
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-2 mb-0.5 align-middle" />
+                        )}
+                        {msg.firstName} {msg.lastName}
+                      </p>
+                      <p className="text-[11px] text-slate-400 font-mono truncate">{msg.email}</p>
+                    </div>
+                    <p className="text-sm text-slate-400 truncate pr-4 self-center">
+                      {msg.message.slice(0, 65)}{msg.message.length > 65 ? "…" : ""}
                     </p>
-                    <p className="text-[11px] text-slate-400 font-mono truncate">
-                      {msg.email}
+                    <p className="text-[11px] text-slate-400 font-mono self-center">
+                      {new Date(msg.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </p>
+                    <div className="self-center"><StatusBadge status={status} /></div>
+                    <span className="hidden sm:block text-orange-200 group-hover:text-orange-500 transition-colors self-center text-base text-right">›</span>
                   </div>
-                  <p className="text-sm text-slate-400 truncate pr-4 self-center">
-                    {msg.message.slice(0, 65)}
-                    {msg.message.length > 65 ? "…" : ""}
-                  </p>
-                  <p className="text-[11px] text-slate-400 font-mono self-center">
-                    {new Date(msg.createdAt).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </p>
-                  <div className="self-center">
-                    <StatusBadge status={status} />
+
+                  {/* ── Mobile card (<sm) ── */}
+                  <div className="sm:hidden px-4 py-4">
+                    {/* Row 1: name + status */}
+                    <div className="flex items-start justify-between gap-2 mb-1.5">
+                      <p className={`text-sm truncate flex-1 ${isUnread ? "font-semibold text-slate-800" : "font-normal text-slate-600"}`}>
+                        {isUnread && (
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-orange-500 mr-2 mb-0.5 align-middle" />
+                        )}
+                        {msg.firstName} {msg.lastName}
+                      </p>
+                      <StatusBadge status={status} />
+                    </div>
+                    {/* Row 2: email */}
+                    <p className="text-[11px] text-slate-400 font-mono truncate mb-1.5">{msg.email}</p>
+                    {/* Row 3: preview */}
+                    <p className="text-sm text-slate-400 line-clamp-2 mb-2">
+                      {msg.message.slice(0, 80)}{msg.message.length > 80 ? "…" : ""}
+                    </p>
+                    {/* Row 4: date + arrow */}
+                    <div className="flex items-center justify-between">
+                      <p className="text-[11px] text-slate-400 font-mono">
+                        {new Date(msg.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                      </p>
+                      <span className="text-orange-300 group-hover:text-orange-500 transition-colors text-base">›</span>
+                    </div>
                   </div>
-                  <span className="hidden sm:block text-orange-200 group-hover:text-orange-500 transition-colors self-center text-base text-right">
-                    ›
-                  </span>
                 </div>
               );
             })
           )}
         </div>
 
-        {/* Pagination */}
+        {/* ── Pagination ── */}
         {totalPages > 1 && (
-          <div className="flex justify-center items-center gap-3 mt-8">
+          <div className="flex justify-center items-center gap-3 mt-6 sm:mt-8">
             <button
               onClick={() => setPage((p) => p - 1)}
               disabled={page === 1}
@@ -399,7 +413,7 @@ export default function MessagesAdminPage() {
         )}
       </div>
 
-      {/* Drawer */}
+      {/* ── Drawer ── */}
       {selectedMsg && (
         <MessageDrawer
           msg={selectedMsg}
@@ -409,7 +423,7 @@ export default function MessagesAdminPage() {
         />
       )}
 
-      {/* Confirm Modal */}
+      {/* ── Confirm Modal ── */}
       {confirmDelete && (
         <ConfirmModal
           onConfirm={handleDeleteConfirm}

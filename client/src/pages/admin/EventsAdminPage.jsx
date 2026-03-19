@@ -63,11 +63,94 @@ const EventsAdminPage = () => {
 
   return (
     <>
-      <Toaster position="top-right" />
-      <div className="max-w-6xl mx-auto px-6 py-10">
+      <style>{`
+        /* ── Responsive overrides ── */
 
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        /* Header: stack on small screens */
+        .events-header {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 2rem;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+        .events-header-actions {
+          display: flex;
+          gap: 0.75rem;
+          flex-shrink: 0;
+        }
+
+        /* Filter chips: allow horizontal scroll on tiny screens */
+        .events-filters {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 1.5rem;
+          flex-wrap: wrap;
+        }
+
+        /* Table: visible on md+ */
+        .events-table-wrap {
+          display: block;
+          overflow-x: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        .events-table {
+          width: 100%;
+          min-width: 640px;
+          font-size: 0.875rem;
+        }
+
+        /* Card list: hidden on md+, shown on mobile */
+        .events-card-list { display: none; }
+
+        /* Empty state */
+        .events-empty {
+          text-align: center;
+          padding: 5rem 1rem;
+        }
+
+        @media (max-width: 767px) {
+          /* Header: stack title + buttons */
+          .events-header {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          .events-header-actions {
+            width: 100%;
+          }
+          .events-header-actions button {
+            flex: 1;
+            justify-content: center;
+          }
+
+          /* Filter chips: scroll horizontally without wrapping */
+          .events-filters {
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            scrollbar-width: none;
+          }
+          .events-filters::-webkit-scrollbar { display: none; }
+          .events-filters button { white-space: nowrap; flex-shrink: 0; }
+
+          /* Hide table, show cards */
+          .events-table-wrap { display: none; }
+          .events-card-list  { display: flex; flex-direction: column; gap: 0.75rem; }
+        }
+
+        @media (max-width: 400px) {
+          .events-header-actions {
+            flex-direction: column;
+          }
+        }
+      `}</style>
+
+      <Toaster position="top-right" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+
+        {/* ── Header ── */}
+        <div className="events-header">
           <div>
             <span className="text-xs font-semibold text-primary uppercase tracking-widest">Admin</span>
             <h1 className="text-2xl font-bold font-poppins text-foreground mt-1">Events</h1>
@@ -75,7 +158,7 @@ const EventsAdminPage = () => {
               {events.length} total events
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="events-header-actions">
             <button onClick={fetchEvents} className="btn-outline-primary flex items-center gap-2 text-sm py-2">
               <RefreshCw size={14} /> Refresh
             </button>
@@ -88,8 +171,8 @@ const EventsAdminPage = () => {
           </div>
         </div>
 
-        {/* Filter chips */}
-        <div className="flex gap-2 mb-6 flex-wrap">
+        {/* ── Filter chips ── */}
+        <div className="events-filters">
           {["All", "Draft", "Published", "Cancelled", "Completed"].map((s) => (
             <button
               key={s}
@@ -105,92 +188,170 @@ const EventsAdminPage = () => {
           ))}
         </div>
 
-        {/* Table */}
+        {/* ── Loading spinner ── */}
         {loading ? (
           <div className="flex justify-center py-20">
             <div className="w-10 h-10 rounded-full border-4 border-primary border-t-transparent animate-spin" />
           </div>
         ) : (
-          <div className="bg-card border border-border rounded-2xl overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-border bg-section-alt">
-                  <th className="text-left p-4 font-semibold text-muted-foreground">Event</th>
-                  <th className="text-left p-4 font-semibold text-muted-foreground">Date</th>
-                  <th className="text-left p-4 font-semibold text-muted-foreground">Mode</th>
-                  <th className="text-left p-4 font-semibold text-muted-foreground">Status</th>
-                  <th className="text-left p-4 font-semibold text-muted-foreground">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((e) => (
-                  <tr key={e._id} className="border-b border-border hover:bg-section-alt transition-colors">
-                    <td className="p-4">
-                      <p className="font-semibold text-foreground">{e.title}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{e.category}</p>
-                    </td>
-                    <td className="p-4 text-muted-foreground">
-                      {e.dateTime?.startDate ? new Date(e.dateTime.startDate).toDateString() : "TBA"}
-                    </td>
-                    <td className="p-4">
-                      <span className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/40 text-secondary-foreground">
-                        {e.eventMode}
-                      </span>
-                    </td>
-                    <td className="p-4">
+          <>
+            {/* ══ DESKTOP TABLE (md+) ══ */}
+            <div className="bg-card border border-border rounded-2xl overflow-hidden events-table-wrap">
+              <table className="events-table">
+                <thead>
+                  <tr className="border-b border-border bg-section-alt">
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Event</th>
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Date</th>
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Mode</th>
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Status</th>
+                    <th className="text-left p-4 font-semibold text-muted-foreground">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((e) => (
+                    <tr key={e._id} className="border-b border-border hover:bg-section-alt transition-colors">
+                      <td className="p-4">
+                        <p className="font-semibold text-foreground">{e.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{e.category}</p>
+                      </td>
+                      <td className="p-4 text-muted-foreground">
+                        {e.dateTime?.startDate ? new Date(e.dateTime.startDate).toDateString() : "TBA"}
+                      </td>
+                      <td className="p-4">
+                        <span className="text-xs font-medium px-2 py-1 rounded-full bg-secondary/40 text-secondary-foreground">
+                          {e.eventMode}
+                        </span>
+                      </td>
+                      <td className="p-4">
+                        <select
+                          value={e.status}
+                          onChange={(ev) => handleStatusChange(e._id, ev.target.value)}
+                          className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer ${statusStyle(e.status)}`}
+                        >
+                          {["Draft", "Published", "Cancelled", "Completed"].map((s) => (
+                            <option key={s} value={s}>{s}</option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="p-4">
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => navigate(`/events/${e._id}`)}
+                            className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                            title="View"
+                          >
+                            <Eye size={15} />
+                          </button>
+                          <button
+                            onClick={() => navigate(`/admin/events/${e._id}/edit`)}
+                            className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                            title="Edit"
+                          >
+                            <Pencil size={15} />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(e._id)}
+                            className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              {filtered.length === 0 && (
+                <div className="events-empty">
+                  <div className="text-5xl mb-4">📭</div>
+                  <p className="text-muted-foreground">No events found.</p>
+                  <button
+                    onClick={() => navigate("/admin/events/new")}
+                    className="btn-primary mt-4"
+                  >
+                    Create First Event
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* ══ MOBILE CARDS (<md) ══ */}
+            <div className="events-card-list">
+              {filtered.length === 0 ? (
+                <div className="events-empty bg-card border border-border rounded-2xl">
+                  <div className="text-5xl mb-4">📭</div>
+                  <p className="text-muted-foreground">No events found.</p>
+                  <button
+                    onClick={() => navigate("/admin/events/new")}
+                    className="btn-primary mt-4"
+                  >
+                    Create First Event
+                  </button>
+                </div>
+              ) : (
+                filtered.map((e) => (
+                  <div
+                    key={e._id}
+                    className="bg-card border border-border rounded-2xl p-4"
+                  >
+                    {/* Card top: title + category + status select */}
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="min-w-0">
+                        <p className="font-semibold text-foreground truncate">{e.title}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5">{e.category}</p>
+                      </div>
                       <select
                         value={e.status}
                         onChange={(ev) => handleStatusChange(e._id, ev.target.value)}
-                        className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer ${statusStyle(e.status)}`}
+                        className={`text-xs font-semibold px-2 py-1 rounded-full border-none outline-none cursor-pointer flex-shrink-0 ${statusStyle(e.status)}`}
                       >
                         {["Draft", "Published", "Cancelled", "Completed"].map((s) => (
                           <option key={s} value={s}>{s}</option>
                         ))}
                       </select>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => navigate(`/events/${e._id}`)}
-                          className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                          title="View"
-                        >
-                          <Eye size={15} />
-                        </button>
-                        <button
-                          onClick={() => navigate(`/admin/events/${e._id}/edit`)}
-                          className="p-1.5 rounded-lg hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
-                          title="Edit"
-                        >
-                          <Pencil size={15} />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(e._id)}
-                          className="p-1.5 rounded-lg hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={15} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                    </div>
 
-            {filtered.length === 0 && (
-              <div className="text-center py-20">
-                <div className="text-5xl mb-4">📭</div>
-                <p className="text-muted-foreground">No events found.</p>
-                <button
-                  onClick={() => navigate("/admin/events/new")}
-                  className="btn-primary mt-4"
-                >
-                  Create First Event
-                </button>
-              </div>
-            )}
-          </div>
+                    {/* Card meta row */}
+                    <div className="flex items-center gap-3 mb-4 flex-wrap">
+                      <span className="text-xs text-muted-foreground">
+                        📅 {e.dateTime?.startDate ? new Date(e.dateTime.startDate).toDateString() : "TBA"}
+                      </span>
+                      <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-secondary/40 text-secondary-foreground">
+                        {e.eventMode}
+                      </span>
+                    </div>
+
+                    {/* Card actions */}
+                    <div className="flex items-center gap-2 pt-3 border-t border-border">
+                      <button
+                        onClick={() => navigate(`/events/${e._id}`)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                        title="View"
+                      >
+                        <Eye size={13} /> View
+                      </button>
+                      <button
+                        onClick={() => navigate(`/admin/events/${e._id}/edit`)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                        title="Edit"
+                      >
+                        <Pencil size={13} /> Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(e._id)}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-medium hover:bg-red-50 text-muted-foreground hover:text-red-600 transition-colors"
+                        title="Delete"
+                      >
+                        <Trash2 size={13} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </>
         )}
 
       </div>

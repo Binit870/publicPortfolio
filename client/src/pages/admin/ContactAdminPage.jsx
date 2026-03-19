@@ -4,7 +4,7 @@ import { getContactPageAdminApi, updateContactPageAdminApi } from "../../api/con
 import toast, { Toaster } from "react-hot-toast";
 
 const SectionCard = ({ title, children }) => (
-  <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
+  <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-sm">
     <h3 className="text-sm font-bold text-primary uppercase tracking-widest mb-5">
       {title}
     </h3>
@@ -144,32 +144,32 @@ const ContactAdminPage = () => {
   return (
     <>
       <Toaster position="top-right" />
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
 
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
           <div>
             <span className="text-xs font-semibold text-primary uppercase tracking-widest">
               Admin
             </span>
-            <h1 className="text-2xl font-bold font-poppins text-foreground mt-1">
+            <h1 className="text-xl sm:text-2xl font-bold font-poppins text-foreground mt-1">
               Contact Page
             </h1>
             <p className="text-sm text-muted-foreground mt-1">
               Edit everything visible on the public contact page.
             </p>
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-col xs:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
             <button
               onClick={fetchData}
-              className="btn-outline-primary flex items-center gap-2 text-sm py-2"
+              className="btn-outline-primary flex items-center justify-center gap-2 text-sm py-2 w-full sm:w-auto"
             >
               <RefreshCw size={14} /> Refresh
             </button>
             <button
               onClick={handleSave}
               disabled={saving}
-              className="btn-primary flex items-center gap-2 text-sm py-2"
+              className="btn-primary flex items-center justify-center gap-2 text-sm py-2 w-full sm:w-auto"
             >
               {saving ? (
                 <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
@@ -181,11 +181,11 @@ const ContactAdminPage = () => {
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
 
           {/* Page Header */}
           <SectionCard title="Page Header">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Title"
                 value={pageData?.pageHeader?.title}
@@ -205,11 +205,11 @@ const ContactAdminPage = () => {
           <SectionCard title="Contact Form Fields">
             <div className="space-y-4">
               {["firstName", "lastName", "workEmail", "company", "message"].map((field) => (
-                <div key={field} className="p-4 bg-background rounded-xl border border-border">
+                <div key={field} className="p-3 sm:p-4 bg-background rounded-xl border border-border">
                   <p className="text-xs font-bold text-primary uppercase tracking-wider mb-3">
                     {field}
                   </p>
-                  <div className="grid md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <InputField
                       label="Label"
                       value={pageData?.contactForm?.fields?.[field]?.label}
@@ -260,7 +260,7 @@ const ContactAdminPage = () => {
 
           {/* General Contact */}
           <SectionCard title="General Contact Info">
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <InputField
                 label="Email"
                 value={pageData?.generalContact?.email}
@@ -283,7 +283,7 @@ const ContactAdminPage = () => {
               {(pageData?.features || []).map((feature, i) => (
                 <div
                   key={i}
-                  className="p-4 bg-background rounded-xl border border-border"
+                  className="p-3 sm:p-4 bg-background rounded-xl border border-border"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-muted-foreground uppercase">
@@ -291,12 +291,12 @@ const ContactAdminPage = () => {
                     </span>
                     <button
                       onClick={() => removeFeature(i)}
-                      className="text-destructive hover:text-destructive/80 transition-colors"
+                      className="text-destructive hover:text-destructive/80 transition-colors p-1"
                     >
                       <Trash2 size={14} />
                     </button>
                   </div>
-                  <div className="grid md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                     <InputField
                       label="Icon (emoji)"
                       value={feature.icon}
@@ -309,19 +309,21 @@ const ContactAdminPage = () => {
                       onChange={(e) => updateFeature(i, "title", e.target.value)}
                       placeholder="Feature title"
                     />
-                    <InputField
-                      label="Description"
-                      value={feature.description}
-                      onChange={(e) => updateFeature(i, "description", e.target.value)}
-                      placeholder="Short description"
-                    />
+                    <div className="sm:col-span-2 md:col-span-1">
+                      <InputField
+                        label="Description"
+                        value={feature.description}
+                        onChange={(e) => updateFeature(i, "description", e.target.value)}
+                        placeholder="Short description"
+                      />
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
             <button
               onClick={addFeature}
-              className="btn-outline-primary flex items-center gap-2 text-sm py-2"
+              className="btn-outline-primary flex items-center gap-2 text-sm py-2 w-full sm:w-auto justify-center sm:justify-start"
             >
               <Plus size={14} /> Add Feature
             </button>
@@ -329,7 +331,7 @@ const ContactAdminPage = () => {
 
           {/* Popular Links */}
           <SectionCard title="Popular Links Section">
-            <div className="grid md:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <InputField
                 label="Section Title"
                 value={pageData?.popularLinksSection?.title}
@@ -348,7 +350,7 @@ const ContactAdminPage = () => {
               {(pageData?.popularLinksSection?.links || []).map((link, i) => (
                 <div
                   key={i}
-                  className="p-4 bg-background rounded-xl border border-border"
+                  className="p-3 sm:p-4 bg-background rounded-xl border border-border"
                 >
                   <div className="flex items-center justify-between mb-3">
                     <span className="text-xs font-bold text-muted-foreground uppercase">
@@ -356,12 +358,12 @@ const ContactAdminPage = () => {
                     </span>
                     <button
                       onClick={() => removeLink(i)}
-                      className="text-destructive hover:text-destructive/80 transition-colors"
+                      className="text-destructive hover:text-destructive/80 transition-colors p-1"
                     >
                       <Trash2 size={14} />
                     </button>
                   </div>
-                  <div className="grid md:grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <InputField
                       label="Icon (emoji)"
                       value={link.icon}
@@ -392,7 +394,7 @@ const ContactAdminPage = () => {
             </div>
             <button
               onClick={addLink}
-              className="btn-outline-primary flex items-center gap-2 text-sm py-2"
+              className="btn-outline-primary flex items-center gap-2 text-sm py-2 w-full sm:w-auto justify-center sm:justify-start"
             >
               <Plus size={14} /> Add Link
             </button>
@@ -400,7 +402,7 @@ const ContactAdminPage = () => {
 
           {/* Page Status */}
           <SectionCard title="Page Status">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-3">
               <div>
                 <p className="text-sm font-semibold text-foreground">
                   Contact Page Active
@@ -411,7 +413,7 @@ const ContactAdminPage = () => {
               </div>
               <button
                 onClick={() => updateField("isActive", !pageData?.isActive)}
-                className={`flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full transition-colors ${
+                className={`flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-full transition-colors shrink-0 ${
                   pageData?.isActive
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
@@ -427,11 +429,11 @@ const ContactAdminPage = () => {
           </SectionCard>
 
           {/* Save button at bottom */}
-          <div className="flex justify-end pt-2">
+          <div className="flex justify-end pt-2 pb-4">
             <button
               onClick={handleSave}
               disabled={saving}
-              className="btn-primary flex items-center gap-2"
+              className="btn-primary flex items-center gap-2 w-full sm:w-auto justify-center"
             >
               {saving ? (
                 <span className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
