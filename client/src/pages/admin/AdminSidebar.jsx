@@ -5,7 +5,6 @@ import {
   Menu,
   X,
   MessageSquare,
-  Settings,
   Phone,
   CalendarDays,
   Images,
@@ -120,10 +119,6 @@ export default function AdminSidebar() {
           {/* manageProfile */}
           {can("manageProfile") &&
             navBtn("/admin/profile", <UserCircle size={20} />, "Profile")}
-
-          {/* manageSettings */}
-          {can("manageSettings") &&
-            navBtn("/admin/settings", <Settings size={20} />, "Settings")}
 
         </div>
 

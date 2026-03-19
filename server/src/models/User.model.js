@@ -52,7 +52,6 @@ const userSchema = new mongoose.Schema(
       manageEvents: { type: Boolean, default: true },
       manageUpdates: { type: Boolean, default: true },
       manageMessages: { type: Boolean, default: true },
-      manageSettings: { type: Boolean, default: true },
     },
 
     refreshToken: {
