@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Download, ArrowRight, Github, Linkedin, Twitter, Instagram, Globe } from "lucide-react";
-import API from "../../../api/axiosInstance"; // ✅ adjust path as needed
+import { useNavigate } from "react-router-dom";
+import { CalendarDays, ArrowRight, Github, Linkedin, Twitter, Instagram, Globe } from "lucide-react";
+import API from "../../../api/axiosInstance";
 
 const socialMeta = {
   github:    { Icon: Github,    label: "GitHub" },
@@ -12,140 +13,217 @@ const socialMeta = {
 
 const HeroSection = () => {
   const [profile, setProfile] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // ✅ GET /api/profile  (public route)
     API.get("/profile")
       .then((res) => setProfile(res.data.data))
       .catch(() => {});
   }, []);
 
-  const home   = profile?.home        || {};
-  const social = profile?.socialLinks || {};
-
+  const home         = profile?.home        || {};
+  const social       = profile?.socialLinks || {};
   const activeSocials = Object.entries(social).filter(([, url]) => !!url);
 
   return (
     <section
       id="home"
-      className="relative py-28 overflow-hidden bg-white"
-      style={{ fontFamily: "'Nunito', sans-serif" }}
+      className="relative overflow-hidden bg-white"
+      style={{ fontFamily: "'Poppins', sans-serif", padding: "clamp(60px, 10vw, 112px) 0" }}
     >
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Syne:wght@700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 
-        /* Blobs */
-        .hero-blob { position:absolute; border-radius:50%; filter:blur(80px); opacity:.13; pointer-events:none; }
+        .hero-blob {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(80px);
+          opacity: .13;
+          pointer-events: none;
+        }
 
-        /* Fade-up stagger */
         .h-f1 { animation: hFade .65s ease both; }
         .h-f2 { animation: hFade .65s .12s ease both; }
         .h-f3 { animation: hFade .65s .24s ease both; }
         .h-f4 { animation: hFade .65s .36s ease both; }
-        @keyframes hFade { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
-
-        /* Buttons */
-        .btn-saffron {
-          display:inline-flex; align-items:center; gap:8px;
-          background:#FF9933; color:#fff;
-          font-family:'Syne',sans-serif; font-weight:800; font-size:12px;
-          letter-spacing:.08em; text-transform:uppercase;
-          padding:12px 24px; border-radius:9px; border:none; cursor:pointer;
-          transition:background .2s, transform .15s, box-shadow .2s;
-          box-shadow:0 4px 16px rgba(255,153,51,.3);
+        @keyframes hFade {
+          from { opacity: 0; transform: translateY(18px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
-        .btn-saffron:hover { background:#e07d1a; transform:translateY(-2px); box-shadow:0 8px 22px rgba(255,153,51,.38); }
+
+        /* ── Buttons ── */
+        .btn-saffron {
+          display: inline-flex; align-items: center; gap: 8px;
+          background: #FF9933; color: #fff;
+          font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 12px;
+          letter-spacing: .06em; text-transform: uppercase;
+          padding: 12px 24px; border-radius: 9px; border: none; cursor: pointer;
+          transition: background .2s, transform .15s, box-shadow .2s;
+          box-shadow: 0 4px 16px rgba(255,153,51,.3);
+        }
+        .btn-saffron:hover {
+          background: #e07d1a;
+          transform: translateY(-2px);
+          box-shadow: 0 8px 22px rgba(255,153,51,.38);
+        }
 
         .btn-green-outline {
-          display:inline-flex; align-items:center; gap:8px;
-          background:transparent; color:#138808;
-          font-family:'Syne',sans-serif; font-weight:800; font-size:12px;
-          letter-spacing:.08em; text-transform:uppercase;
-          padding:11px 24px; border-radius:9px; border:2px solid #138808; cursor:pointer;
-          transition:background .2s, color .2s, transform .15s;
+          display: inline-flex; align-items: center; gap: 8px;
+          background: transparent; color: #138808;
+          font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 12px;
+          letter-spacing: .06em; text-transform: uppercase;
+          padding: 11px 24px; border-radius: 9px; border: 2px solid #138808; cursor: pointer;
+          transition: background .2s, color .2s, transform .15s;
         }
-        .btn-green-outline:hover { background:#138808; color:white; transform:translateY(-2px); }
+        .btn-green-outline:hover {
+          background: #138808;
+          color: white;
+          transform: translateY(-2px);
+        }
 
-        /* Avatar ring — tricolor spin */
-        .avatar-wrap { position:relative; width:230px; height:230px; flex-shrink:0; }
-        .avatar-wrap::before {
-          content:'';
-          position:absolute; inset:-7px; border-radius:50%;
+        /* ── Tricolor spinning ring ── */
+        @keyframes triSpin { to { transform: rotate(360deg); } }
+
+        .avatar-outer {
+          position: relative;
+          width: clamp(180px, 32vw, 280px);
+          height: clamp(180px, 32vw, 280px);
+          flex-shrink: 0;
+        }
+        .avatar-ring {
+          position: absolute;
+          inset: -7px;
+          border-radius: 50%;
           background: conic-gradient(#FF9933 0deg 120deg, #ffffff 120deg 240deg, #138808 240deg 360deg);
           animation: triSpin 14s linear infinite;
         }
-        @keyframes triSpin { to { transform:rotate(360deg); } }
-        .avatar-inner {
-          position:relative; z-index:1;
-          width:100%; height:100%;
-          border-radius:50%; overflow:hidden;
-          border:5px solid white;
-          background:#f3faf3;
-          display:flex; align-items:center; justify-content:center;
-          font-size:84px;
+        .avatar-circle {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 5px solid white;
+          background: #f3faf3;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: clamp(48px, 8vw, 84px);
+          z-index: 1;
+        }
+        .avatar-circle img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+          display: block;
         }
 
-        /* Social pills */
+        /* ── Social pills ── */
         .s-pill {
-          display:inline-flex; align-items:center; gap:6px;
-          padding:6px 14px; border-radius:100px;
-          border:1.5px solid #e0ece0;
-          font-size:12px; font-weight:700;
-          font-family:'Syne',sans-serif; letter-spacing:.03em;
-          color:#333; text-decoration:none;
-          transition:border-color .2s, color .2s, background .2s, transform .15s;
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 6px 14px; border-radius: 100px;
+          border: 1.5px solid #e0ece0;
+          font-size: 12px; font-weight: 600;
+          font-family: 'Poppins', sans-serif; letter-spacing: .02em;
+          color: #333; text-decoration: none;
+          transition: border-color .2s, color .2s, background .2s, transform .15s;
         }
-        .s-pill:hover { border-color:#FF9933; color:#FF9933; background:#fff8f0; transform:translateY(-2px); }
+        .s-pill:hover {
+          border-color: #FF9933;
+          color: #FF9933;
+          background: #fff8f0;
+          transform: translateY(-2px);
+        }
 
-        /* Chip */
+        /* ── Tagline chip ── */
         .hero-chip {
-          display:inline-block;
-          background:#fff3e6; color:#FF9933;
-          border:1px solid #ffd9a8; border-radius:100px;
-          font-size:11px; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
-          padding:4px 14px; font-family:'Syne',sans-serif;
+          display: inline-block;
+          background: #fff3e6; color: #FF9933;
+          border: 1px solid #ffd9a8; border-radius: 100px;
+          font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+          padding: 4px 14px;
+          font-family: 'Poppins', sans-serif;
         }
       `}</style>
 
       {/* Background blobs */}
-      <div className="hero-blob" style={{ width:500, height:500, background:"#FF9933", top:-200, left:-200 }} />
-      <div className="hero-blob" style={{ width:380, height:380, background:"#138808", bottom:-150, right:-130 }} />
+      <div className="hero-blob" style={{ width: 500, height: 500, background: "#FF9933", top: -200, left: -200 }} />
+      <div className="hero-blob" style={{ width: 380, height: 380, background: "#138808", bottom: -150, right: -130 }} />
 
-      <div className="max-w-7xl mx-auto px-6 grid lg:grid-cols-2 gap-14 items-center relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center relative z-10">
 
-        {/* ── LEFT ── */}
-        <div>
+        {/* ── LEFT: Text content ── */}
+        <div className="order-2 lg:order-1">
+
+          {/* Tagline chip */}
           <div className="h-f1">
-            <span className="hero-chip mb-5 inline-block">
+            <span className="hero-chip mb-4 sm:mb-5 inline-block">
               {home.tagline || "Welcome to my portfolio"}
             </span>
           </div>
 
+          {/* Heading — Poppins 800 */}
           <h1
-            className="h-f2 mb-5 leading-tight"
-            style={{ fontFamily:"'Syne',sans-serif", fontWeight:800, fontSize:"clamp(2rem,4vw,3rem)", color:"#111", lineHeight:1.15 }}
+            className="h-f2 mb-4 sm:mb-5"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 800,
+              fontSize: "clamp(1.8rem, 4vw, 3rem)",
+              color: "#111",
+              lineHeight: 1.15,
+            }}
           >
             Hi, I'm{" "}
-            <span style={{ color:"#FF9933" }}>{home.name || "Your Name"}</span>
+            <span style={{ color: "#FF9933" }}>{home.name || "Your Name"}</span>
           </h1>
 
-          <p className="h-f3 mb-8 leading-relaxed" style={{ fontSize:"1.05rem", color:"#555", maxWidth:480 }}>
+          {/* Sub-title — Poppins 500 */}
+          <p
+            className="h-f3 mb-6 sm:mb-8 leading-relaxed"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 500,
+              fontSize: "clamp(0.95rem, 1.5vw, 1.05rem)",
+              color: "#555",
+              maxWidth: 480,
+            }}
+          >
             {home.title || "Full-Stack Developer & Community Builder"}
           </p>
 
-          <div className="h-f3 flex flex-wrap gap-3 mb-10">
-            <button className="btn-saffron">
+          {/* CTA buttons */}
+          <div className="h-f3 flex flex-wrap gap-3 mb-8 sm:mb-10">
+            {/* Explore My Work → /projects */}
+            <button
+              className="btn-saffron"
+              onClick={() => navigate("/updates")}
+            >
               Explore My Work <ArrowRight size={15} />
             </button>
-            <button className="btn-green-outline">
-              <Download size={15} /> Download CV
+
+            {/* Explore Events → /events */}
+            <button
+              className="btn-green-outline"
+              onClick={() => navigate("/events")}
+            >
+              <CalendarDays size={15} /> Explore Events
             </button>
           </div>
 
-          {/* ── Social Links ── */}
+          {/* Social links */}
           {activeSocials.length > 0 && (
             <div className="h-f4">
-              <p style={{ fontSize:"10px", letterSpacing:".15em", textTransform:"uppercase", color:"#aaa", fontWeight:800, marginBottom:10, fontFamily:"'Syne',sans-serif" }}>
+              <p
+                style={{
+                  fontFamily: "'Poppins', sans-serif",
+                  fontSize: "10px",
+                  letterSpacing: ".15em",
+                  textTransform: "uppercase",
+                  color: "#aaa",
+                  fontWeight: 700,
+                  marginBottom: 10,
+                }}
+              >
                 Find me on
               </p>
               <div className="flex flex-wrap gap-2">
@@ -154,7 +232,13 @@ const HeroSection = () => {
                   if (!meta) return null;
                   const { Icon, label } = meta;
                   return (
-                    <a key={key} href={url} target="_blank" rel="noopener noreferrer" className="s-pill">
+                    <a
+                      key={key}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="s-pill"
+                    >
                       <Icon size={13} /> {label}
                     </a>
                   );
@@ -164,12 +248,13 @@ const HeroSection = () => {
           )}
         </div>
 
-        {/* ── RIGHT ── */}
-        <div className="flex justify-center h-f2">
-          <div className="avatar-wrap">
-            <div className="avatar-inner">
+        {/* ── RIGHT: Circular avatar ── */}
+        <div className="order-1 lg:order-2 flex justify-center h-f2">
+          <div className="avatar-outer">
+            <div className="avatar-ring" />
+            <div className="avatar-circle">
               {home.heroImage
-                ? <img src={home.heroImage} alt={home.name || "Hero"} className="w-full h-full object-cover" />
+                ? <img src={home.heroImage} alt={home.name || "Hero"} />
                 : <span>👨‍💻</span>
               }
             </div>
