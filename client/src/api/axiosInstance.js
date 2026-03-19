@@ -30,17 +30,26 @@ const processQueue = (error, token = null) => {
 };
 
 API.interceptors.response.use(
-  (response) => response, // pass through successful responses
+  (response) => response,
 
   async (error) => {
     const originalRequest = error.config;
 
-    // Only attempt refresh on 401, and never retry the refresh call itself
     const is401 = error.response?.status === 401;
-    const isRefreshCall = originalRequest.url?.includes("/auth/refresh-token");
+
+    // ── SKIP LIST — never retry these routes ──
+    const SKIP_URLS = [
+      "/auth/refresh-token",
+      "/auth/me",
+      "/auth/login",
+      "/auth/logout",
+    ];
+    const shouldSkip = SKIP_URLS.some((path) =>
+      originalRequest.url?.includes(path)
+    );
     const alreadyRetried = originalRequest._retry;
 
-    if (!is401 || isRefreshCall || alreadyRetried) {
+    if (!is401 || shouldSkip || alreadyRetried) {
       return Promise.reject(error);
     }
 
@@ -56,36 +65,23 @@ API.interceptors.response.use(
         .catch((err) => Promise.reject(err));
     }
 
-    // Mark this request so we don't retry it again
     originalRequest._retry = true;
     isRefreshing = true;
 
     try {
-      // POST /api/auth/refresh-token
-      // withCredentials sends the httpOnly refreshToken cookie automatically
       const { data } = await API.post("/auth/refresh-token");
       const newAccessToken = data.data.accessToken;
 
-      // Persist new access token
       localStorage.setItem("accessToken", newAccessToken);
-
-      // Update default header for future requests
       API.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
-
-      // Retry all queued requests with the new token
       processQueue(null, newAccessToken);
 
-      // Retry the original failed request
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       return API(originalRequest);
     } catch (refreshError) {
-      // Refresh failed — clear session and redirect to login
       processQueue(refreshError, null);
       localStorage.removeItem("accessToken");
-
-      // Redirect to login page — adjust path to match your router
       window.location.href = "/login";
-
       return Promise.reject(refreshError);
     } finally {
       isRefreshing = false;
