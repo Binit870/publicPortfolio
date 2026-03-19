@@ -24,6 +24,14 @@ import AdminRoute from "./routes/AdminRoute";
 import AdminDashboard from "./pages/admin/AdminDashboardPage";
 import AdminLayout from "./layouts/AdminLayout";
 import MessagesAdminPage from "./pages/admin/MessagesAdminPage";
+import ContactAdminPage from "./pages/admin/ContactAdminPage";
+import EventsAdminPage from "./pages/admin/EventsAdminPage";
+import EventFormPage from "./pages/admin/EventFormPage";
+import GalleryAdminPage from "./pages/admin/GalleryAdminPage";
+import GalleryItemFormPage from "./pages/admin/GalleryItemFormPage";
+import UpdatesAdminPage from "./pages/admin/UpdatesAdminPage";
+import UpdateFormPage from "./pages/admin/UpdateFormPage";
+import ProfileAdminPage from "./pages/admin/ProfileAdminPage";
 
 import Navbar from "./components/common/Navbar";
 import ScrollToTop from "./components/common/ScrollToTop";
@@ -73,6 +81,17 @@ function Layout() {
           <Route element={<AdminLayout />}>
             <Route path="/admin/dashboard" element={<AdminDashboard />} />
             <Route path="/admin/messages" element={<MessagesAdminPage />} />
+            <Route path="/admin/contact" element={<ContactAdminPage />} />
+            <Route path="/admin/events" element={<EventsAdminPage />} />
+            <Route path="/admin/events/new" element={<EventFormPage />} />
+            <Route path="/admin/events/:id/edit" element={<EventFormPage />} />
+            <Route path="/admin/gallery" element={<GalleryAdminPage />} />
+            <Route path="/admin/gallery/items/new" element={<GalleryItemFormPage />} />
+            <Route path="/admin/gallery/items/:id/edit" element={<GalleryItemFormPage />} />
+            <Route path="/admin/updates" element={<UpdatesAdminPage />} />
+            <Route path="/admin/updates/new" element={<UpdateFormPage />} />
+            <Route path="/admin/updates/edit/:id" element={<UpdateFormPage />} />
+            <Route path="/admin/profile" element={<ProfileAdminPage />} />
             {/* <Route path="/admin/events" element={<AdminEvents />} /> */}
 
           </Route>

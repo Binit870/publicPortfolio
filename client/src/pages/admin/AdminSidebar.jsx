@@ -7,9 +7,12 @@ import {
   Menu,
   X,
   MessageSquare,
-  Settings
+  Settings,
+  Phone,
+  CalendarDays,
+  Images
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -17,11 +20,25 @@ export default function AdminSidebar() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    // add your logout logic
-    navigate("/login");
-  };
+  const isActive = (path) => location.pathname === path;
+
+  const navBtn = (path, icon, label) => (
+    <button
+      onClick={() => { navigate(path); setMobileOpen(false); }}
+      className={`flex items-center gap-3 w-full p-2 rounded-lg transition ${
+        isActive(path)
+          ? "bg-primary/10 text-primary font-semibold"
+          : "hover:bg-gray-100"
+      }`}
+    >
+      {icon}
+      {!collapsed && <span>{label}</span>}
+    </button>
+  );
+
+  const handleLogout = () => navigate("/login");
 
   return (
     <>
@@ -42,14 +59,13 @@ export default function AdminSidebar() {
       )}
 
       {/* SIDEBAR */}
-      <div
-        className={`
+      <div className={`
         fixed md:static z-50 top-0 left-0 h-screen bg-white border-r flex flex-col
         transition-all duration-300
         ${collapsed ? "w-20" : "w-64"}
         ${mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-      `}
-      >
+      `}>
+
         {/* HEADER */}
         <div className="p-4 flex items-center justify-between border-b">
           {!collapsed && (
@@ -57,16 +73,11 @@ export default function AdminSidebar() {
               Admin Panel
             </h1>
           )}
-
           <div className="flex gap-2">
             <button onClick={() => setCollapsed(!collapsed)}>
               <Menu size={20} />
             </button>
-
-            <button
-              className="md:hidden"
-              onClick={() => setMobileOpen(false)}
-            >
+            <button className="md:hidden" onClick={() => setMobileOpen(false)}>
               <X size={20} />
             </button>
           </div>
@@ -75,23 +86,17 @@ export default function AdminSidebar() {
         {/* LINKS */}
         <div className="flex-1 p-3 space-y-2 overflow-y-auto">
 
-          {/* Dashboard */}
-          <button
-            onClick={() => navigate("/admin/dashboard")}
-            className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            <LayoutDashboard size={20} />
-            {!collapsed && <span>Dashboard</span>}
-          </button>
+          {navBtn("/admin/dashboard", <LayoutDashboard size={20} />, "Dashboard")}
 
-          {/* Messages */}
-          <button
-            onClick={() => navigate("/admin/messages")}
-            className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            <MessageSquare size={20} />
-            {!collapsed && <span>Messages</span>}
-          </button>
+          {navBtn("/admin/messages", <MessageSquare size={20} />, "Messages")}
+
+          {navBtn("/admin/contact", <Phone size={20} />, "Contact Page")}
+
+          {navBtn("/admin/events", <CalendarDays size={20} />, "Events")}
+
+          {navBtn("/admin/gallery", <Images size={20} />, "Gallery")}
+
+          {navBtn("/admin/updates", <Images size={20} />, "Updates")}
 
           {/* MANAGE */}
           <div>
@@ -103,7 +108,6 @@ export default function AdminSidebar() {
                 <Users size={20} />
                 {!collapsed && <span>Manage</span>}
               </div>
-
               {!collapsed && (
                 <ChevronDown
                   size={16}
@@ -130,14 +134,8 @@ export default function AdminSidebar() {
             )}
           </div>
 
-          {/* Settings */}
-          <button
-            onClick={() => navigate("/admin/settings")}
-            className="flex items-center gap-3 w-full p-2 rounded-lg hover:bg-gray-100 transition"
-          >
-            <Settings size={20} />
-            {!collapsed && <span>Settings</span>}
-          </button>
+          {navBtn("/admin/settings", <Settings size={20} />, "Settings")}
+
         </div>
 
         {/* LOGOUT */}
