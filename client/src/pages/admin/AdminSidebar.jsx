@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   LayoutDashboard,
-  Users,
-  ChevronDown,
   LogOut,
   Menu,
   X,
@@ -10,19 +8,28 @@ import {
   Settings,
   Phone,
   CalendarDays,
-  Images
+  Images,
+  FileText,
+  UserCircle,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AdminSidebar() {
   const [collapsed, setCollapsed] = useState(false);
-  const [manageOpen, setManageOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { user, logout } = useAuth();
 
-  const isActive = (path) => location.pathname === path;
+  const perms = user?.permissions || {};
+  const isSuperAdmin = user?.role === "superadmin";
+
+  // superadmin always returns true
+  const can = (key) => isSuperAdmin || perms[key] === true;
+
+  const isActive = (path) => location.pathname.startsWith(path);
 
   const navBtn = (path, icon, label) => (
     <button
@@ -38,13 +45,16 @@ export default function AdminSidebar() {
     </button>
   );
 
-  const handleLogout = () => navigate("/login");
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
 
   return (
     <>
       {/* MOBILE TOP BAR */}
       <div className="md:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm">
-        <h1 className="font-bold text-indigo-600">Admin</h1>
+        <h1 className="font-bold text-primary">Admin</h1>
         <button onClick={() => setMobileOpen(true)}>
           <Menu />
         </button>
@@ -69,9 +79,7 @@ export default function AdminSidebar() {
         {/* HEADER */}
         <div className="p-4 flex items-center justify-between border-b">
           {!collapsed && (
-            <h1 className="font-bold text-lg text-indigo-600">
-              Admin Panel
-            </h1>
+            <h1 className="font-bold text-lg text-primary">Admin Panel</h1>
           )}
           <div className="flex gap-2">
             <button onClick={() => setCollapsed(!collapsed)}>
@@ -84,59 +92,52 @@ export default function AdminSidebar() {
         </div>
 
         {/* LINKS */}
-        <div className="flex-1 p-3 space-y-2 overflow-y-auto">
+        <div className="flex-1 p-3 space-y-1 overflow-y-auto">
 
+          {/* Dashboard — always visible */}
           {navBtn("/admin/dashboard", <LayoutDashboard size={20} />, "Dashboard")}
 
-          {navBtn("/admin/messages", <MessageSquare size={20} />, "Messages")}
+          {/* manageMessages */}
+          {can("manageMessages") &&
+            navBtn("/admin/messages", <MessageSquare size={20} />, "Messages")}
 
-          {navBtn("/admin/contact", <Phone size={20} />, "Contact Page")}
+          {/* manageSettings — contact page lives under settings permission */}
+          {can("manageSettings") &&
+            navBtn("/admin/contact", <Phone size={20} />, "Contact Page")}
 
-          {navBtn("/admin/events", <CalendarDays size={20} />, "Events")}
+          {/* manageEvents */}
+          {can("manageEvents") &&
+            navBtn("/admin/events", <CalendarDays size={20} />, "Events")}
 
-          {navBtn("/admin/gallery", <Images size={20} />, "Gallery")}
+          {/* manageGallery */}
+          {can("manageGallery") &&
+            navBtn("/admin/gallery", <Images size={20} />, "Gallery")}
 
-          {navBtn("/admin/updates", <Images size={20} />, "Updates")}
+          {/* manageUpdates */}
+          {can("manageUpdates") &&
+            navBtn("/admin/updates", <FileText size={20} />, "Updates")}
 
-          {/* MANAGE */}
-          <div>
-            <button
-              onClick={() => setManageOpen(!manageOpen)}
-              className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-gray-100 transition"
-            >
-              <div className="flex items-center gap-3">
-                <Users size={20} />
-                {!collapsed && <span>Manage</span>}
-              </div>
-              {!collapsed && (
-                <ChevronDown
-                  size={16}
-                  className={`transition ${manageOpen ? "rotate-180" : ""}`}
-                />
-              )}
-            </button>
+          {/* manageProfile */}
+          {can("manageProfile") &&
+            navBtn("/admin/profile", <UserCircle size={20} />, "Profile")}
 
-            {manageOpen && !collapsed && (
-              <div className="ml-8 mt-2 space-y-2 text-sm">
-                <button
-                  onClick={() => navigate("/admin/manage/users")}
-                  className="block hover:text-indigo-600"
-                >
-                  Users
-                </button>
-                <button
-                  onClick={() => navigate("/admin/manage/content")}
-                  className="block hover:text-indigo-600"
-                >
-                  Content
-                </button>
-              </div>
-            )}
-          </div>
-
-          {navBtn("/admin/settings", <Settings size={20} />, "Settings")}
+          {/* manageSettings */}
+          {can("manageSettings") &&
+            navBtn("/admin/settings", <Settings size={20} />, "Settings")}
 
         </div>
+
+        {/* User info strip */}
+        {!collapsed && user && (
+          <div className="px-4 py-3 border-t border-b bg-gray-50">
+            <p className="text-xs font-semibold text-foreground truncate">
+              {user.name}
+            </p>
+            <p className="text-[10px] text-muted-foreground truncate capitalize">
+              {user.role}
+            </p>
+          </div>
+        )}
 
         {/* LOGOUT */}
         <div className="p-3 border-t">
