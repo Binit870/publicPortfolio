@@ -349,7 +349,7 @@ export default function AdminManagePage({ mode: propMode }) {
                   </svg>
                 </div>
                 <div>
-                  <div className="ap-header-title">Admin Portal</div>
+                  <div className="ap-header-title">Manage Admin Portal</div>
                   <div className="ap-header-sub">Manage administrators — create, toggle access, or remove users.</div>
                 </div>
               </div>
