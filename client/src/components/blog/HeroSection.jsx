@@ -290,19 +290,7 @@ export default function HeroSection() {
           Explore tutorials, deep dives, and insights from the developer community.
         </p>
 
-        <div className="bh-search-wrap bh-f4">
-          <div className="bh-search-inner">
-            <Search size={18} className="bh-search-icon" />
-            <Input
-              placeholder="Search articles..."
-              className="border-0 focus-visible:ring-0 bg-transparent font-['Outfit']"
-            />
-          </div>
-          <Button className="bh-search-btn rounded-none">
-            Search
-          </Button>
-        </div>
-
+        
       </div>
     </section>
   )
