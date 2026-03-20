@@ -11,7 +11,6 @@ const socialMeta = {
   website:   { Icon: Globe,     label: "Website" },
 };
 
-// Matches the app's React Router routes exactly
 const navLinks = [
   { label: "Home",    path: "/"        },
   { label: "Events",  path: "/events"  },
@@ -37,91 +36,27 @@ const Footer = () => {
   const activeSocials = Object.entries(social).filter(([, url]) => !!url);
 
   return (
-    <footer style={{ background: "#0d1a0d", color: "#ccc", fontFamily: "'Poppins', sans-serif" }}>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap');
+    <footer className="bg-white text-gray-800 font-[Poppins]">
 
-        .ft-stripe {
-          height: 4px;
-          background: linear-gradient(to right, #FF9933 33.3%, #ffffff 33.3% 66.6%, #138808 66.6%);
-        }
+      {/* Tricolor stripe */}
+      <div className="h-1 bg-gradient-to-r from-orange-500 via-white to-green-700" />
 
-        .ft-top    { padding: 60px 0 44px; border-bottom: 1px solid #1a2e1a; }
-        .ft-bottom { padding: 18px 0; text-align: center; font-size: 12px; color: #3a5a3a; font-family: 'Poppins', sans-serif; font-weight: 500; }
-
-        .ft-brand { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.6rem; color: white; letter-spacing: -.01em; }
-        .ft-brand .dot { color: #FF9933; }
-
-        .ft-grad-line { width: 44px; height: 3px; border-radius: 2px; margin: 14px 0 18px; background: linear-gradient(90deg, #FF9933, #138808); }
-
-        .ft-section-label {
-          font-family: 'Poppins', sans-serif;
-          font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-          color: #FF9933; font-weight: 700; margin-bottom: 18px;
-          display: flex; align-items: center; gap: 8px;
-        }
-        .ft-section-label::after {
-          content: ''; flex: 1; height: 1px;
-          background: linear-gradient(to right, #FF993340, transparent);
-        }
-
-        .ft-nav-btn {
-          display: flex; align-items: center; gap: 7px;
-          font-size: 13px; font-weight: 500;
-          color: #6a8a6a; background: none; border: none;
-          padding: 5px 0; cursor: pointer; width: 100%; text-align: left;
-          font-family: 'Poppins', sans-serif;
-          transition: color .2s, gap .2s;
-        }
-        .ft-nav-btn::before {
-          content: '';
-          width: 4px; height: 4px; border-radius: 50%;
-          background: #FF9933; opacity: 0;
-          transition: opacity .2s; flex-shrink: 0;
-        }
-        .ft-nav-btn:hover { color: #FF9933; gap: 10px; }
-        .ft-nav-btn:hover::before { opacity: 1; }
-
-        .ft-contact-row {
-          display: flex; align-items: flex-start; gap: 10px;
-          font-size: 13px; font-weight: 400;
-          color: #6a8a6a; margin-bottom: 12px; line-height: 1.6;
-          font-family: 'Poppins', sans-serif;
-        }
-        .ft-contact-icon {
-          width: 28px; height: 28px; border-radius: 7px;
-          background: rgba(19,136,8,.12); border: 1px solid rgba(19,136,8,.2);
-          display: flex; align-items: center; justify-content: center;
-          flex-shrink: 0; color: #138808;
-        }
-
-        .ft-social-btn {
-          width: 38px; height: 38px; border-radius: 9px;
-          border: 1.5px solid #1e3a1e; background: rgba(255,255,255,.02);
-          display: inline-flex; align-items: center; justify-content: center;
-          color: #4a6a4a; text-decoration: none;
-          transition: border-color .2s, color .2s, background .2s, transform .15s;
-        }
-        .ft-social-btn:hover { border-color: #FF9933; color: #FF9933; background: rgba(255,153,51,.08); transform: translateY(-2px); }
-
-        .ft-divider { height: 1px; background: linear-gradient(to right, transparent, #1e3a1e 30%, #1e3a1e 70%, transparent); }
-      `}</style>
-
-      {/* Tricolor top bar */}
-      <div className="ft-stripe" />
-
-      <div className="ft-top">
+      {/* Top section */}
+      <div className="py-14 border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-12">
 
-          {/* ── Brand + tagline + social ── */}
+          {/* Brand */}
           <div>
-            <div className="ft-brand">
-              {siteTitle}<span className="dot">.</span>
+            <div className="text-2xl font-extrabold text-green-700">
+              {siteTitle}<span className="text-orange-500">.</span>
             </div>
-            <div className="ft-grad-line" />
-            <p style={{ fontSize: 13, lineHeight: 1.8, marginBottom: 22, maxWidth: 260, color: "#6a8a6a", fontWeight: 400 }}>
+
+            <div className="w-11 h-[3px] rounded bg-gradient-to-r from-orange-500 to-green-700 my-4" />
+
+            <p className="text-sm text-gray-600 leading-relaxed mb-6 max-w-xs">
               {home.tagline || "Full-stack developer and community builder crafting purposeful digital experiences."}
             </p>
+
             {activeSocials.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {activeSocials.map(([key, url]) => {
@@ -129,8 +64,14 @@ const Footer = () => {
                   if (!meta) return null;
                   const { Icon } = meta;
                   return (
-                    <a key={key} href={url} target="_blank" rel="noopener noreferrer" className="ft-social-btn" title={key}>
-                      <Icon size={15} />
+                    <a
+                      key={key}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-300 text-green-700 hover:text-orange-500 hover:border-orange-500 hover:bg-orange-50 transition-all"
+                    >
+                      <Icon size={16} />
                     </a>
                   );
                 })}
@@ -138,56 +79,76 @@ const Footer = () => {
             )}
           </div>
 
-          {/* ── Quick Links — React Router navigation ── */}
+          {/* Navigation */}
           <div>
-            <p className="ft-section-label">Quick Links</p>
-            {navLinks.map(({ label, path }) => (
-              <button
-                key={path}
-                className="ft-nav-btn"
-                onClick={() => navigate(path)}
-              >
-                {label}
-              </button>
-            ))}
+            <p className="text-xs font-bold tracking-widest text-orange-500 uppercase mb-5 flex items-center gap-2">
+              Quick Links
+              <span className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent" />
+            </p>
+
+            <div className="space-y-2">
+              {navLinks.map(({ label, path }) => (
+                <button
+                  key={path}
+                  onClick={() => navigate(path)}
+                  className="flex items-center gap-2 text-sm text-green-800 hover:text-orange-500 transition-all group"
+                >
+                  <span className="w-1 h-1 rounded-full bg-orange-500 opacity-0 group-hover:opacity-100 transition-all" />
+                  {label}
+                </button>
+              ))}
+            </div>
           </div>
 
-          {/* ── Contact ── */}
+          {/* Contact */}
           <div>
-            <p className="ft-section-label">Contact</p>
+            <p className="text-xs font-bold tracking-widest text-orange-500 uppercase mb-5 flex items-center gap-2">
+              Contact
+              <span className="flex-1 h-px bg-gradient-to-r from-orange-200 to-transparent" />
+            </p>
+
             {footer.contactEmail && (
-              <div className="ft-contact-row">
-                <div className="ft-contact-icon"><Mail size={13} /></div>
+              <div className="flex gap-3 mb-3 text-sm text-gray-700">
+                <div className="w-8 h-8 flex items-center justify-center rounded-md bg-green-100 text-green-700 border border-green-200">
+                  <Mail size={14} />
+                </div>
                 <span>{footer.contactEmail}</span>
               </div>
             )}
+
             {footer.contactPhone && (
-              <div className="ft-contact-row">
-                <div className="ft-contact-icon"><Phone size={13} /></div>
+              <div className="flex gap-3 mb-3 text-sm text-gray-700">
+                <div className="w-8 h-8 flex items-center justify-center rounded-md bg-green-100 text-green-700 border border-green-200">
+                  <Phone size={14} />
+                </div>
                 <span>{footer.contactPhone}</span>
               </div>
             )}
+
             {footer.address && (
-              <div className="ft-contact-row">
-                <div className="ft-contact-icon"><MapPin size={13} /></div>
+              <div className="flex gap-3 mb-3 text-sm text-gray-700">
+                <div className="w-8 h-8 flex items-center justify-center rounded-md bg-green-100 text-green-700 border border-green-200">
+                  <MapPin size={14} />
+                </div>
                 <span>{footer.address}</span>
               </div>
             )}
+
             {!footer.contactEmail && !footer.contactPhone && !footer.address && (
-              <p style={{ fontSize: 13, color: "#2e4a2e" }}>No contact info yet.</p>
+              <p className="text-sm text-gray-400">No contact info yet.</p>
             )}
           </div>
 
         </div>
       </div>
 
-      {/* Bottom divider + copyright */}
-      <div className="ft-divider" />
-      <div className="ft-bottom">
+      {/* Bottom */}
+      <div className="border-t border-gray-200 py-5 text-center text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-6">
           {footer.copyrightText || `© ${new Date().getFullYear()} ${siteTitle}. All rights reserved.`}
         </div>
       </div>
+
     </footer>
   );
 };

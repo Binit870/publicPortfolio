@@ -33,9 +33,7 @@ const GalleryItemCard = ({ item, onClick, className = "" }) => {
           {item.mediaType}
         </span>
 
-        <span className="absolute top-3 right-3 flex items-center gap-1 bg-background/80 rounded-full px-2 py-0.5 text-xs">
-          <Heart size={12} /> {item.stats?.likes || 0}
-        </span>
+        
 
         {item.hoverText && (
           <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/70 transition-colors duration-300 flex items-center justify-center">
@@ -49,11 +47,7 @@ const GalleryItemCard = ({ item, onClick, className = "" }) => {
       <div className="p-4">
         <span className="text-[11px] font-semibold text-primary uppercase">{item.category}</span>
         <h3 className="text-sm font-bold mt-1 mb-2">{item.title}</h3>
-        <div className="flex items-center gap-4 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><Eye size={12} /> {item.stats?.views || 0}</span>
-          <span className="flex items-center gap-1"><Heart size={12} /> {item.stats?.likes || 0}</span>
-          <span className="flex items-center gap-1"><Bookmark size={12} /> {Math.floor((item.stats?.likes || 0) * 0.4)}</span>
-        </div>
+        
       </div>
     </div>
   );

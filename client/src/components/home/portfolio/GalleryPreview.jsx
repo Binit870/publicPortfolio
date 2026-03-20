@@ -88,6 +88,13 @@ const STYLES = `
     box-shadow: 0 4px 20px rgba(0,0,0,.09);
     transition: transform .2s, box-shadow .2s;
   }
+    .gl-desktop-btn { display: inline-flex; }
+.gl-mobile-btn { display: none; }
+
+@media (max-width: 640px) {
+  .gl-desktop-btn { display: none; }
+  .gl-mobile-btn { display: block; width: 100%; }
+}
   .gl-item:hover { transform: scale(1.02); box-shadow: 0 10px 32px rgba(0,0,0,.14); }
   .gl-item img {
     width: 100%; height: 100%; object-fit: cover; display: block;
@@ -158,17 +165,17 @@ const STYLES = `
 
 const ShapesBg = () => (
   <>
-    <div className="gl-blob" style={{ width:380, height:380, top:"-15%", left:"-6%", background:"#d4c9b8" }} />
-    <div className="gl-blob" style={{ width:260, height:260, bottom:"-8%", right:"-4%", background:"#b8d4b8" }} />
-    <div className="gl-blob" style={{ width:160, height:160, top:"40%", right:"30%", background:"#ccc4b8" }} />
-    <svg aria-hidden="true" style={{ position:"absolute", inset:0, width:"100%", height:"100%", pointerEvents:"none", zIndex:1 }}
+    <div className="gl-blob" style={{ width: 380, height: 380, top: "-15%", left: "-6%", background: "#d4c9b8" }} />
+    <div className="gl-blob" style={{ width: 260, height: 260, bottom: "-8%", right: "-4%", background: "#b8d4b8" }} />
+    <div className="gl-blob" style={{ width: 160, height: 160, top: "40%", right: "30%", background: "#ccc4b8" }} />
+    <svg aria-hidden="true" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 1 }}
       xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1440 600">
       {/* top-right dot grid */}
-      {Array.from({length:5}).map((_,r) => Array.from({length:5}).map((_,c) => (
-        <circle key={`tr-${r}-${c}`} cx={1300+c*20} cy={36+r*20} r="2.4" fill="#138808" opacity="0.18" />
+      {Array.from({ length: 5 }).map((_, r) => Array.from({ length: 5 }).map((_, c) => (
+        <circle key={`tr-${r}-${c}`} cx={1300 + c * 20} cy={36 + r * 20} r="2.4" fill="#138808" opacity="0.18" />
       )))}
       {/* top-left spinning ring */}
-      <g style={{transformOrigin:"80px 72px"}} className="gl-spin-cw">
+      <g style={{ transformOrigin: "80px 72px" }} className="gl-spin-cw">
         <circle cx="80" cy="72" r="60" fill="none" stroke="#FF9933" strokeWidth="1.8" strokeDasharray="9 6" opacity="0.22" />
       </g>
       <circle cx="80" cy="72" r="38" fill="none" stroke="#FF9933" strokeWidth="1" opacity="0.12" />
@@ -177,41 +184,41 @@ const ShapesBg = () => (
       <polygon className="gl-pulse" points="720,10 770,96 670,96" fill="none" stroke="#138808" strokeWidth="2" opacity="0.14" />
       <polygon points="720,28 757,86 683,86" fill="none" stroke="#138808" strokeWidth="1" opacity="0.08" />
       {/* right-mid rotating squares */}
-      <g style={{transformOrigin:"1390px 300px"}} className="gl-spin-cw">
+      <g style={{ transformOrigin: "1390px 300px" }} className="gl-spin-cw">
         <rect x="1362" y="272" width="56" height="56" rx="6" fill="none" stroke="#FF9933" strokeWidth="1.8" opacity="0.2" />
       </g>
-      <g style={{transformOrigin:"1390px 300px"}} className="gl-spin-ccw">
+      <g style={{ transformOrigin: "1390px 300px" }} className="gl-spin-ccw">
         <rect x="1374" y="284" width="32" height="32" rx="4" fill="none" stroke="#FF9933" strokeWidth="1" opacity="0.11" />
       </g>
       {/* left-mid hexagon */}
       <polygon className="gl-pulse" points="44,256 70,272 70,304 44,320 18,304 18,272" fill="none" stroke="#138808" strokeWidth="2" opacity="0.16" />
       {/* bottom-right spinning ring */}
-      <g style={{transformOrigin:"1350px 536px"}} className="gl-spin-ccw">
+      <g style={{ transformOrigin: "1350px 536px" }} className="gl-spin-ccw">
         <circle cx="1350" cy="536" r="54" fill="none" stroke="#138808" strokeWidth="1.8" strokeDasharray="7 5" opacity="0.19" />
       </g>
       <circle cx="1350" cy="536" r="32" fill="none" stroke="#138808" strokeWidth="1" opacity="0.10" />
       <circle cx="1350" cy="536" r="7" fill="#138808" opacity="0.11" />
       {/* bottom-left dot grid */}
-      {Array.from({length:4}).map((_,r) => Array.from({length:4}).map((_,c) => (
-        <circle key={`bl-${r}-${c}`} cx={36+c*20} cy={466+r*20} r="2.4" fill="#FF9933" opacity="0.17" />
+      {Array.from({ length: 4 }).map((_, r) => Array.from({ length: 4 }).map((_, c) => (
+        <circle key={`bl-${r}-${c}`} cx={36 + c * 20} cy={466 + r * 20} r="2.4" fill="#FF9933" opacity="0.17" />
       )))}
       {/* top wavy */}
       <path d="M320,40 Q400,16 480,40 Q560,64 640,40 Q720,16 800,40 Q880,64 960,40 Q1040,16 1120,40" fill="none" stroke="#138808" strokeWidth="1.8" opacity="0.14" strokeLinecap="round" />
       {/* bottom wavy */}
       <path d="M320,570 Q400,546 480,570 Q560,594 640,570 Q720,546 800,570 Q880,594 960,570 Q1040,546 1120,570" fill="none" stroke="#FF9933" strokeWidth="2" opacity="0.17" strokeLinecap="round" />
       {/* rotating square mid */}
-      <g style={{transformOrigin:"340px 140px"}} className="gl-spin-cw">
+      <g style={{ transformOrigin: "340px 140px" }} className="gl-spin-cw">
         <rect x="316" y="116" width="48" height="48" rx="7" fill="none" stroke="#138808" strokeWidth="1.6" opacity="0.14" />
       </g>
       {/* plus signs */}
-      {[{x:1220,y:68,c:"#FF9933"},{x:200,y:175,c:"#138808"},{x:1396,y:455,c:"#FF9933"},{x:52,y:415,c:"#FF9933"},{x:705,y:562,c:"#138808"},{x:1055,y:295,c:"#138808"}].map((p,i)=>(
+      {[{ x: 1220, y: 68, c: "#FF9933" }, { x: 200, y: 175, c: "#138808" }, { x: 1396, y: 455, c: "#FF9933" }, { x: 52, y: 415, c: "#FF9933" }, { x: 705, y: 562, c: "#138808" }, { x: 1055, y: 295, c: "#138808" }].map((p, i) => (
         <g key={i} opacity="0.19">
-          <line x1={p.x-9} y1={p.y} x2={p.x+9} y2={p.y} stroke={p.c} strokeWidth="2.5" strokeLinecap="round" />
-          <line x1={p.x} y1={p.y-9} x2={p.x} y2={p.y+9} stroke={p.c} strokeWidth="2.5" strokeLinecap="round" />
+          <line x1={p.x - 9} y1={p.y} x2={p.x + 9} y2={p.y} stroke={p.c} strokeWidth="2.5" strokeLinecap="round" />
+          <line x1={p.x} y1={p.y - 9} x2={p.x} y2={p.y + 9} stroke={p.c} strokeWidth="2.5" strokeLinecap="round" />
         </g>
       ))}
       <circle cx="1100" cy="508" r="6" fill="#FF9933" opacity="0.16" />
-      <circle cx="640" cy="42"  r="5" fill="#138808" opacity="0.14" />
+      <circle cx="640" cy="42" r="5" fill="#138808" opacity="0.14" />
       <circle cx="255" cy="375" r="8" fill="#FF9933" opacity="0.12" />
       <circle cx="1260" cy="218" r="4" fill="#138808" opacity="0.15" />
     </svg>
@@ -245,7 +252,7 @@ const GalleryPreview = () => {
         <div className="gl-container">
           <div className="gl-skel-header" />
           <div className="gl-grid gl-grid-4">
-            {[1,2,3,4].map((i) => <div key={i} className="gl-skel-item" />)}
+            {[1, 2, 3, 4].map((i) => <div key={i} className="gl-skel-item" />)}
           </div>
         </div>
       </section>
@@ -256,45 +263,73 @@ const GalleryPreview = () => {
 
   const gridClass =
     items.length === 1 ? "gl-grid gl-grid-1"
-    : items.length === 2 ? "gl-grid gl-grid-2"
-    : items.length === 3 ? "gl-grid gl-grid-3"
-    : "gl-grid gl-grid-4";
+      : items.length === 2 ? "gl-grid gl-grid-2"
+        : items.length === 3 ? "gl-grid gl-grid-3"
+          : "gl-grid gl-grid-4";
 
-  return (
-    <section id="gallery" className="gl-section">
-      <style>{STYLES}</style>
-      <ShapesBg />
+ return (
+  <section id="gallery" className="gl-section">
+    <style>{STYLES}</style>
+    <ShapesBg />
 
-      <div className="gl-container">
-        <div className="gl-header-row">
-          <div className="gl-header-left">
-            <span className="gl-chip">Portfolio</span>
-            <h2 className="gl-title">Gallery</h2>
-            <p className="gl-subtitle">Moments captured from events, talks, and travels.</p>
-          </div>
-          <button className="gl-btn-outline" onClick={() => navigate("/gallery")}>
-            View Full Gallery
-          </button>
+    <div className="gl-container">
+
+      {/* HEADER */}
+      <div className="gl-header-row">
+        <div className="gl-header-left">
+          <span className="gl-chip">Portfolio</span>
+          <h2 className="gl-title">Gallery</h2>
+          <p className="gl-subtitle">
+            Moments captured from events, talks, and travels.
+          </p>
         </div>
 
-        <div className={gridClass}>
-          {items.map((img) => (
-            <div key={img._id} className="gl-item" onClick={() => navigate("/gallery")}>
-              {img.mediaUrl ? (
-                <img src={img.thumbnail || img.mediaUrl} alt={img.altText || img.title} />
-              ) : (
-                <div className="gl-placeholder">🖼️</div>
-              )}
-              <div className="gl-overlay">
-                <span className="gl-overlay-title">{img.title}</span>
-                <span className="gl-overlay-cat">{img.category}</span>
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* ✅ DESKTOP BUTTON */}
+        <button
+          className="gl-btn-outline gl-desktop-btn"
+          onClick={() => navigate("/gallery")}
+        >
+          View More
+        </button>
       </div>
-    </section>
-  );
+
+      {/* GRID */}
+      <div className={gridClass}>
+        {items.map((img) => (
+          <div
+            key={img._id}
+            className="gl-item"
+            onClick={() => navigate("/gallery")}
+          >
+            {img.mediaUrl ? (
+              <img
+                src={img.thumbnail || img.mediaUrl}
+                alt={img.altText || img.title}
+              />
+            ) : (
+              <div className="gl-placeholder">🖼️</div>
+            )}
+            <div className="gl-overlay">
+              <span className="gl-overlay-title">{img.title}</span>
+              <span className="gl-overlay-cat">{img.category}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ✅ MOBILE BUTTON BELOW GRID */}
+      <div className="gl-mobile-btn mt-6">
+        <button
+          className="gl-btn-outline w-full justify-center"
+          onClick={() => navigate("/gallery")}
+        >
+          View More
+        </button>
+      </div>
+
+    </div>
+  </section>
+);
 };
 
 export default GalleryPreview;

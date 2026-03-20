@@ -75,18 +75,7 @@ const PopularLinks = () => (
             {link.desc}
           </p>
 
-          {link.isEmail ? (
-            <a
-              href="mailto:info@observiq.com"
-              className="text-primary text-[13px] font-bold flex items-center gap-1 hover:gap-2 transition-all"
-            >
-              Contact Us <ArrowRight size={14} />
-            </a>
-          ) : (
-            <button className="text-primary text-[13px] font-bold flex items-center gap-1 hover:gap-2 transition-all">
-              Explore <ArrowRight size={14} />
-            </button>
-          )}
+          
         </motion.div>
       ))}
     </div>
