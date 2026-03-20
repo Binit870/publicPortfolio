@@ -79,13 +79,13 @@ const GalleryPage = () => {
       <div className="relative z-10">
         <GalleryHero stats={stats} />
 
-        <GalleryControls
+        {/* <GalleryControls
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           activeLayout={activeLayout}
           onLayoutChange={setActiveLayout}
           categories={categories}
-        />
+        /> */}
 
         {gridGallery && (
           <GalleryGrid

@@ -196,7 +196,7 @@ const UpdateDetailPage = () => {
         </div>
       </div>
 
-      <NewsletterStrip />
+      {/* <NewsletterStrip /> */}
       <Footer />
     </div>
   );

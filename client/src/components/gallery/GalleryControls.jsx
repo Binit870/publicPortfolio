@@ -12,7 +12,7 @@ const GalleryControls = ({ activeFilter, onFilterChange, activeLayout, onLayoutC
       <div className="max-w-7xl mx-auto px-4 flex items-center justify-between gap-3">
 
         {/* Filter — plain text like in screenshot */}
-        <div className="flex gap-6 overflow-x-auto">
+        {/* <div className="flex gap-6 overflow-x-auto">
           {categories.map((cat) => (
             <button
               key={cat}
@@ -26,7 +26,7 @@ const GalleryControls = ({ activeFilter, onFilterChange, activeLayout, onLayoutC
               {cat}
             </button>
           ))}
-        </div>
+        </div> */}
 
         {/* Layout toggles */}
         <div className="flex gap-1 shrink-0">
